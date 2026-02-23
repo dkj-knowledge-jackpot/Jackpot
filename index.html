@@ -17,10 +17,10 @@
         .btn-dark { background: var(--dark); color: white; }
         .btn-gold { background: var(--gold); color: black; }
         .btn-tg { background: var(--tg-blue); color: white; }
-        .scroll-box { display: flex; overflow-x: auto; padding: 10px; gap: 15px; }
-        .draw-box { min-width: 160px; background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--dark); text-align: center; }
+        .scroll-box { display: flex; overflow-x: auto; padding: 10px; gap: 15px; scrollbar-width: none; }
+        .draw-box { min-width: 160px; background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--dark); text-align: center; color: #000; }
         #popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; color: white; padding: 20px; box-sizing: border-box; text-align: center; overflow-y: auto; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; outline: none; box-sizing: border-box; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-weight: bold; color: #000; outline: none; width: 100%; box-sizing: border-box; }
         .list-item { background: #222; padding: 10px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); }
         .tc-text { text-align: left; font-size: 13px; line-height: 1.6; color: #ccc; }
     </style>
@@ -48,8 +48,16 @@
 
 <div class="scroll-box">
     <div class="draw-box" style="border-color: var(--gold);">
-        <h3>MEGA DRAW</h3><h2>₹100</h2>
-        <button class="btn btn-dark" onclick="join(100)">JOIN NOW</button>
+        <h3>MEGA</h3><h2>₹100</h2>
+        <button class="btn btn-dark" onclick="join(100)">JOIN</button>
+    </div>
+    <div class="draw-box" style="border-color: var(--dark);">
+        <h3>SILVER</h3><h2>₹200</h2>
+        <button class="btn btn-dark" onclick="join(200)">JOIN</button>
+    </div>
+    <div class="draw-box" style="border-color: var(--gold);">
+        <h3>GOLD</h3><h2>₹500</h2>
+        <button class="btn btn-dark" onclick="join(500)">JOIN</button>
     </div>
 </div>
 
@@ -58,7 +66,7 @@
     <button class="btn btn-dark" onclick="showProfile()">👤 MY PROFILE & CODES</button>
     <button class="btn btn-gold" onclick="showWinners()">🏆 TOP WINNERS</button>
     <button class="btn" style="background:#555; color:white;" onclick="showTC()">📄 TERMS & CONDITIONS</button>
-    <a href="https://t.me/dkj_knowledge_jackoprt" target="_blank" class="btn btn-tg">📢 JOIN TELEGRAM CHANNEL</a>
+    <a href="https://t.me/dkj_knowledge_jackoprt" target="_blank" class="btn btn-tg">📢 JOIN TELEGRAM</a>
 </div>
 
 <div id="popup">
@@ -71,12 +79,12 @@
     const TG_ADMIN_ID = "8072402346"; 
     const UPI_ID = "paytmqr6vnhle@ptys";
 
-    let db = JSON.parse(localStorage.getItem('dkj_db')) || { users: [], entries: [], winners: [] };
-    let currentUser = JSON.parse(localStorage.getItem('dkj_user')) || null;
+    let db = JSON.parse(localStorage.getItem('dkj_v3_db')) || { users: [], entries: [], winners: [] };
+    let currentUser = JSON.parse(localStorage.getItem('dkj_v3_user')) || null;
 
     function save() {
-        localStorage.setItem('dkj_db', JSON.stringify(db));
-        localStorage.setItem('dkj_user', JSON.stringify(currentUser));
+        localStorage.setItem('dkj_v3_db', JSON.stringify(db));
+        localStorage.setItem('dkj_v3_user', JSON.stringify(currentUser));
     }
 
     function tgMsg(msg) {
@@ -90,17 +98,17 @@
 
     function doReg() {
         let n = document.getElementById('rn').value, m = document.getElementById('rm').value, p = document.getElementById('rp').value;
-        if(!n || !m || !p) return alert("Fill all!");
+        if(!n || !m || !p) return alert("Sari jankari bharein!");
         currentUser = { name: n, mob: m, pass: p, bal: 0, id: Math.floor(1000+Math.random()*9000), codes: [] };
         db.users.push(currentUser); save(); updateUI();
-        tgMsg(✅ *New User:* ${n}\n📱 *Mob:* ${m});
-        alert("Success!"); closeP();
+        tgMsg(✅ *Naya User:* ${n}\n📱 *Mob:* ${m});
+        alert("Account Ban Gaya!"); closeP();
     }
 
     function join(amt) {
-        if(!currentUser) return alert("Login First!");
-        if(db.entries.find(e => e.uId == currentUser.id)) return alert("Already have a ticket!");
-        document.getElementById('pContent').innerHTML = <h2>PAYMENT</h2><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}%26am=${amt}"><button class="btn btn-gold" onclick="generateTicket()">I HAVE PAID</button>;
+        if(!currentUser) return alert("Pehle Account Banayein!");
+        if(db.entries.find(e => e.uId == currentUser.id)) return alert("Aapke paas pehle se ticket hai!");
+        document.getElementById('pContent').innerHTML = <h2>PAYMENT ₹${amt}</h2><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}%26am=${amt}"><button class="btn btn-gold" onclick="generateTicket()">PAID - GET CODE</button>;
         document.getElementById('popup').style.display = 'block';
     }
 
@@ -109,56 +117,64 @@
         currentUser.codes.push(ticket);
         db.entries.push({ uId: currentUser.id, name: currentUser.name, code: ticket });
         save(); tgMsg(🎟 *New Ticket:* ${currentUser.name}\n🎫 *Code:* ${ticket});
-        alert("Ticket Issued: " + ticket); closeP(); updateUI();
+        alert("Aapka Code: " + ticket + "\n(Winner list check karte rahein)"); closeP(); updateUI();
     }
 
     function showTC() {
-        document.getElementById('pContent').innerHTML = <h2>T&C</h2><div class="tc-text"><p>1. Draw date 13 March 2026 hai, ise aage badhaya ja sakta hai.</p><p>2. Ek person ek hi code le sakta hai jab tak draw na ho jaye.</p></div>;
+        document.getElementById('pContent').innerHTML = <h2>T&C</h2><div class="tc-text"><p>1. Draw date 13 March 2026 hai, ise aage badhaya ja sakta hai.</p><p>2. Ek person ek hi code le sakta hai jab tak winner na ho.</p><p>3. Answer galat hone par bhi code mil jayega.</p></div>;
         document.getElementById('popup').style.display = 'block';
     }
 
     function showWinners() {
-        let h = "<h2>WINNERS</h2>";
-        db.winners.slice(-20).forEach(w => { h += <div class="list-item">${w.name} - ₹${w.prize}</div>; });
-        document.getElementById('pContent').innerHTML = h || "No winners yet";
+        let h = "<h2>TOP WINNERS</h2>";
+        db.winners.slice(-20).reverse().forEach(w => { h += <div class="list-item">${w.name} - <span style="color:#27ae60">₹${w.prize}</span><br><small>Ticket: ${w.code}</small></div>; });
+        document.getElementById('pContent').innerHTML = h || "Abhi koi winner nahi hai";
         document.getElementById('popup').style.display = 'block';
     }
 
     function showProfile() {
-        if(!currentUser) return alert("Login First!");
-        document.getElementById('pContent').innerHTML = <h2>PROFILE</h2><p>Name: ${currentUser.name}</p><p>ID: ${currentUser.id}</p><p>Codes: ${currentUser.codes.join(", ")}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>;
+        if(!currentUser) return alert("Pehle login karein!");
+        document.getElementById('pContent').innerHTML = <h2>MY PROFILE</h2><p>Name: ${currentUser.name}</p><p>ID: ${currentUser.id}</p><p>My Codes: ${currentUser.codes.join(", ") || "No Tickets"}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>;
         document.getElementById('popup').style.display = 'block';
     }
 
     function adminMode() {
-        let pw = prompt("Admin PW:");
+        let pw = prompt("Admin Password:");
         if(pw !== "7860") return;
-        let act = prompt("1: Add Winner\n2: Reset");
+        let act = prompt("1: Winner List Se Chunein\n2: Reset System");
         if(act=="1") {
             let h = "<h2>Select Winner</h2>";
             db.entries.forEach(e => { h += <div class="list-item" onclick="makeWin('${e.uId}','${e.code}')">${e.name} (${e.code})</div>; });
-            document.getElementById('pContent').innerHTML = h; document.getElementById('popup').style.display = 'block';
-        } else if(act=="2") { localStorage.clear(); location.reload(); }
+            document.getElementById('pContent').innerHTML = h || "No active tickets"; document.getElementById('popup').style.display = 'block';
+        } else if(act=="2") { if(confirm("Sab delete kar dein?")) { localStorage.clear(); location.reload(); } }
     }
 
     function makeWin(uid, code) {
-        let amt = prompt("Prize Amount?");
+        let amt = prompt("Kitna inaam dena hai (₹)?");
         if(!amt) return;
-        db.winners.push({name: uid, prize: amt});
+        let entryIdx = db.entries.findIndex(x => x.code === code);
+        let userEntry = db.entries[entryIdx];
+        db.winners.push({name: userEntry.name, prize: amt, code: code});
         let u = db.users.find(x => x.id == uid);
         if(u) u.bal += parseInt(amt);
-        db.entries = db.entries.filter(x => x.code !== code);
-        save(); alert("Done!"); closeP(); updateUI();
+        db.entries.splice(entryIdx, 1);
+        save(); alert("Winner Announced!"); closeP(); updateUI();
+    }
+
+    function withdraw() {
+        if(!currentUser || currentUser.bal <= 0) return alert("Balance nahi hai!");
+        let details = prompt("UPI ID ya Bank Details likhein:");
+        if(details) { tgMsg(💰 *Withdraw Request:*\nUser: ${currentUser.name}\nAmt: ₹${currentUser.bal}\nDetails: ${details}); currentUser.bal = 0; save(); updateUI(); alert("Request bhej di gayi hai!"); }
     }
 
     function updateUI() {
         if(currentUser) {
-            document.getElementById('uHi').innerText = "Hi, " + currentUser.name;
+            document.getElementById('uHi').innerText = "Hi, " + currentUser.name + " (ID: " + currentUser.id + ")";
             document.getElementById('vBal').innerText = "₹" + (currentUser.bal || 0);
             document.getElementById('rBtn').style.display = 'none';
         }
     }
-    function logout() { localStorage.removeItem('dkj_user'); location.reload(); }
+    function logout() { localStorage.removeItem('dkj_v3_user'); location.reload(); }
     function closeP() { document.getElementById('popup').style.display = 'none'; }
     window.onload = updateUI;
 </script>
