@@ -2,99 +2,181 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DKJ JACKPOT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DKJ KNOWLEDGE JACKPOT</title>
     <style>
-        body { font-family: sans-serif; background: #f0f0f0; text-align: center; padding: 20px; }
-        .btn { width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; display: block; font-size: 16px; }
-        .btn-gold { background: #c5a059; color: black; }
-        .btn-dark { background: #0f2027; color: white; }
-        #popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); color: white; padding-top: 50px; z-index: 9999; }
-        input { width: 80%; padding: 12px; margin: 10px; border-radius: 5px; border: none; }
+        :root { --gold: #c5a059; --dark: #0f2027; --tg-blue: #0088cc; }
+        body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding-bottom: 80px; -webkit-tap-highlight-color: transparent; }
+        .header { background: var(--dark); color: var(--gold); padding: 15px; text-align: center; border-bottom: 3px solid var(--gold); cursor: pointer; }
+        .marquee-box { background: #000; color: #fff; padding: 5px; font-weight: bold; border-bottom: 1px solid var(--gold); }
+        .card { background: white; margin: 12px; padding: 20px; border-radius: 15px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); text-align: center; }
+        .bal-text { font-size: 35px; color: #27ae60; font-weight: bold; margin: 10px 0; }
+        .pg-container { background: #ddd; height: 12px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
+        .pg-bar { background: var(--gold); height: 100%; width: 52%; transition: 0.5s; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; display: block; box-sizing: border-box; text-decoration: none; text-align: center; font-size: 14px; }
+        .btn-dark { background: var(--dark); color: white; }
+        .btn-gold { background: var(--gold); color: black; }
+        .btn-tg { background: var(--tg-blue); color: white; }
+        .scroll-box { display: flex; overflow-x: auto; padding: 10px; gap: 15px; scrollbar-width: none; }
+        .draw-box { min-width: 160px; background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--dark); text-align: center; color: #000; }
+        #popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; color: white; padding: 20px; box-sizing: border-box; text-align: center; overflow-y: auto; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-weight: bold; color: #000; outline: none; width: 100%; box-sizing: border-box; }
+        .list-item { background: #222; padding: 10px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); }
+        .tc-text { text-align: left; font-size: 13px; line-height: 1.6; color: #ccc; }
     </style>
 </head>
 <body>
 
-    <h2 id="uName">DKJ KNOWLEDGE JACKPOT</h2>
-    <div style="background:white; padding:20px; border-radius:15px; margin-bottom:20px;">
-        <p>Wallet Balance</p>
-        <h1 id="vBal">₹0</h1>
-    </div>
+<div class="marquee-box"><marquee>🔥 Lucky Winner Draw Date: 13 March 2026 || Join Mega Draw Now & Win Big!! 🔥</marquee></div>
 
-    <div id="regDiv">
-        <button class="btn btn-gold" onclick="showReg()">➕ CREATE ACCOUNT (FIRST STEP)</button>
-    </div>
+<div class="header" onclick="adminMode()">
+    <h1 style="margin:0; font-size:18px;">DKJ KNOWLEDGE JACKPOT</h1>
+    <div id="uHi" style="font-size: 11px; color: white; margin-top: 5px;">Welcome Guest (Admin: Tap)</div>
+</div>
 
-    <div id="mainButtons">
-        <button class="btn btn-dark" onclick="join(100)">JOIN MEGA (₹100)</button>
-        <button class="btn btn-dark" onclick="join(200)">JOIN SILVER (₹200)</button>
-        <button class="btn btn-dark" onclick="join(500)">JOIN GOLD (₹500)</button>
-        <button class="btn btn-gold" onclick="showProfile()">MY PROFILE</button>
-    </div>
+<div class="card">
+    <p style="margin:0; font-weight:bold; color: #666;">MY WALLET BALANCE</p>
+    <div class="bal-text" id="vBal">₹0</div>
+    <button class="btn btn-dark" onclick="withdraw()">WITHDRAW MONEY</button>
+</div>
 
-    <div id="popup">
-        <div id="pContent"></div>
-        <button onclick="closeP()" style="background:red; color:white; padding:10px 30px; border:none; border-radius:10px; margin-top:20px;">CLOSE</button>
+<div class="card">
+    <p style="margin:0; font-size:12px; font-weight:bold;">DRAW PROGRESS: 52%</p>
+    <div class="pg-container"><div class="pg-bar"></div></div>
+    <button class="btn btn-gold" onclick="alert('Invite Link Copied!')">COPY INVITE LINK</button>
+</div>
+
+<div class="scroll-box">
+    <div class="draw-box" style="border-color: var(--gold);">
+        <h3>MEGA</h3><h2>₹100</h2>
+        <button class="btn btn-dark" onclick="join(100)">JOIN</button>
     </div>
+    <div class="draw-box" style="border-color: var(--dark);">
+        <h3>SILVER</h3><h2>₹200</h2>
+        <button class="btn btn-dark" onclick="join(200)">JOIN</button>
+    </div>
+    <div class="draw-box" style="border-color: var(--gold);">
+        <h3>GOLD</h3><h2>₹500</h2>
+        <button class="btn btn-dark" onclick="join(500)">JOIN</button>
+    </div>
+</div>
+
+<div style="padding: 10px;">
+    <button id="rBtn" class="btn btn-gold" onclick="showReg()">➕ CREATE ACCOUNT</button>
+    <button class="btn btn-dark" onclick="showProfile()">👤 MY PROFILE & CODES</button>
+    <button class="btn btn-gold" onclick="showWinners()">🏆 TOP WINNERS</button>
+    <button class="btn" style="background:#555; color:white;" onclick="showTC()">📄 TERMS & CONDITIONS</button>
+    <a href="https://t.me/dkj_knowledge_jackoprt" target="_blank" class="btn btn-tg">📢 JOIN TELEGRAM</a>
+</div>
+
+<div id="popup">
+    <div id="pContent"></div>
+    <button onclick="closeP()" style="margin-top:20px; background:red; color:white; border:none; padding:10px 40px; border-radius:10px; font-weight:bold;">CLOSE</button>
+</div>
 
 <script>
-    let user = JSON.parse(localStorage.getItem('dkj_user')) || null;
+    const TG_BOT_TOKEN = "8357735991:AAHUnhnXj0MaNi-Z1XtitwMy994xssKRsyg";
+    const TG_ADMIN_ID = "8072402346"; 
+    const UPI_ID = "paytmqr6vnhle@ptys";
+
+    let db = JSON.parse(localStorage.getItem('dkj_v3_db')) || { users: [], entries: [], winners: [] };
+    let currentUser = JSON.parse(localStorage.getItem('dkj_v3_user')) || null;
+
+    function save() {
+        localStorage.setItem('dkj_v3_db', JSON.stringify(db));
+        localStorage.setItem('dkj_v3_user', JSON.stringify(currentUser));
+    }
+
+    function tgMsg(msg) {
+        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_ADMIN_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`).catch(e => console.log(e));
+    }
 
     function showReg() {
-        document.getElementById('pContent').innerHTML = `
-            <h3>Enter Details</h3>
-            <input id="n" placeholder="Full Name">
-            <input id="m" placeholder="Mobile">
-            <input id="p" placeholder="Password">
-            <button class="btn btn-gold" onclick="saveUser()">REGISTER</button>
-        `;
+        document.getElementById('pContent').innerHTML = `<h2>REGISTER</h2><input id="rn" placeholder="Full Name"><input id="rm" type="number" placeholder="Mobile"><input id="rp" type="password" placeholder="Password"><button class="btn btn-gold" onclick="doReg()">CREATE ACCOUNT</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
-    function saveUser() {
-        let n = document.getElementById('n').value;
-        let m = document.getElementById('m').value;
-        if(!n || !m) return alert("Fill all!");
-        user = {name: n, mob: m, bal: 0, codes: []};
-        localStorage.setItem('dkj_user', JSON.stringify(user));
-        alert("Account Created!");
-        location.reload();
+    function doReg() {
+        let n = document.getElementById('rn').value, m = document.getElementById('rm').value, p = document.getElementById('rp').value;
+        if(!n || !m || !p) return alert("Sari jankari bharein!");
+        currentUser = { name: n, mob: m, pass: p, bal: 0, id: Math.floor(1000+Math.random()*9000), codes: [] };
+        db.users.push(currentUser); save(); updateUI();
+        tgMsg(`✅ *Naya User:* ${n}\n📱 *Mob:* ${m}`);
+        alert("Account Ban Gaya!"); closeP();
     }
 
     function join(amt) {
-        if(!user) return alert("Pehle 'CREATE ACCOUNT' button par click karein!");
-        document.getElementById('pContent').innerHTML = `
-            <h3>Pay ₹${amt}</h3>
-            <p>Scan QR & Send Money</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=paytmqr6vnhle@ptys%26am=${amt}">
-            <button class="btn btn-gold" onclick="getTicket()">I HAVE PAID</button>
-        `;
+        if(!currentUser) return alert("Pehle Account Banayein!");
+        if(db.entries.find(e => e.uId == currentUser.id)) return alert("Aapke paas pehle se ticket hai!");
+        document.getElementById('pContent').innerHTML = `<h2>PAYMENT ₹${amt}</h2><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}%26am=${amt}"><button class="btn btn-gold" onclick="generateTicket()">PAID - GET CODE</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
-    function getTicket() {
-        let code = "DKJ-" + Math.floor(Math.random()*900000);
-        user.codes.push(code);
-        localStorage.setItem('dkj_user', JSON.stringify(user));
-        alert("Your Ticket: " + code);
-        closeP();
+    function generateTicket() {
+        let ticket = "DKJ-" + Math.floor(100000 + Math.random()*900000);
+        currentUser.codes.push(ticket);
+        db.entries.push({ uId: currentUser.id, name: currentUser.name, code: ticket });
+        save(); tgMsg(`🎟 *New Ticket:* ${currentUser.name}\n🎫 *Code:* ${ticket}`);
+        alert("Aapka Code: " + ticket + "\n(Winner list check karte rahein)"); closeP(); updateUI();
+    }
+
+    function showTC() {
+        document.getElementById('pContent').innerHTML = `<h2>T&C</h2><div class="tc-text"><p>1. Draw date 13 March 2026 hai, ise aage badhaya ja sakta hai.</p><p>2. Ek person ek hi code le sakta hai jab tak winner na ho.</p><p>3. Answer galat hone par bhi code mil jayega.</p></div>`;
+        document.getElementById('popup').style.display = 'block';
+    }
+
+    function showWinners() {
+        let h = "<h2>TOP WINNERS</h2>";
+        db.winners.slice(-20).reverse().forEach(w => { h += `<div class="list-item">${w.name} - <span style="color:#27ae60">₹${w.prize}</span><br><small>Ticket: ${w.code}</small></div>`; });
+        document.getElementById('pContent').innerHTML = h || "Abhi koi winner nahi hai";
+        document.getElementById('popup').style.display = 'block';
     }
 
     function showProfile() {
-        if(!user) return alert("No Profile Found!");
-        document.getElementById('pContent').innerHTML = `<h3>My Codes</h3><p>${user.codes.join(", ") || "No Tickets"}</p>`;
+        if(!currentUser) return alert("Pehle login karein!");
+        document.getElementById('pContent').innerHTML = `<h2>MY PROFILE</h2><p>Name: ${currentUser.name}</p><p>ID: ${currentUser.id}</p><p>My Codes: ${currentUser.codes.join(", ") || "No Tickets"}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
-    function closeP() { document.getElementById('popup').style.display = 'none'; }
+    function adminMode() {
+        let pw = prompt("Admin Password:");
+        if(pw !== "7860") return;
+        let act = prompt("1: Winner List Se Chunein\n2: Reset System");
+        if(act=="1") {
+            let h = "<h2>Select Winner</h2>";
+            db.entries.forEach(e => { h += `<div class="list-item" onclick="makeWin('${e.uId}','${e.code}')">${e.name} (${e.code})</div>`; });
+            document.getElementById('pContent').innerHTML = h || "No active tickets"; document.getElementById('popup').style.display = 'block';
+        } else if(act=="2") { if(confirm("Sab delete kar dein?")) { localStorage.clear(); location.reload(); } }
+    }
 
-    window.onload = function() {
-        if(user) {
-            document.getElementById('uName').innerText = "Hi, " + user.name;
-            document.getElementById('vBal').innerText = "₹" + user.bal;
-            document.getElementById('regDiv').style.display = "none";
+    function makeWin(uid, code) {
+        let amt = prompt("Kitna inaam dena hai (₹)?");
+        if(!amt) return;
+        let entryIdx = db.entries.findIndex(x => x.code === code);
+        let userEntry = db.entries[entryIdx];
+        db.winners.push({name: userEntry.name, prize: amt, code: code});
+        let u = db.users.find(x => x.id == uid);
+        if(u) u.bal += parseInt(amt);
+        db.entries.splice(entryIdx, 1);
+        save(); alert("Winner Announced!"); closeP(); updateUI();
+    }
+
+    function withdraw() {
+        if(!currentUser || currentUser.bal <= 0) return alert("Balance nahi hai!");
+        let details = prompt("UPI ID ya Bank Details likhein:");
+        if(details) { tgMsg(`💰 *Withdraw Request:*\nUser: ${currentUser.name}\nAmt: ₹${currentUser.bal}\nDetails: ${details}`); currentUser.bal = 0; save(); updateUI(); alert("Request bhej di gayi hai!"); }
+    }
+
+    function updateUI() {
+        if(currentUser) {
+            document.getElementById('uHi').innerText = "Hi, " + currentUser.name + " (ID: " + currentUser.id + ")";
+            document.getElementById('vBal').innerText = "₹" + (currentUser.bal || 0);
+            document.getElementById('rBtn').style.display = 'none';
         }
-    };
+    }
+    function logout() { localStorage.removeItem('dkj_v3_user'); location.reload(); }
+    function closeP() { document.getElementById('popup').style.display = 'none'; }
+    window.onload = updateUI;
 </script>
 </body>
 </html>
