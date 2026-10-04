@@ -16,7 +16,6 @@
         .header { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: var(--gold); padding: 15px; text-align: center; border-bottom: 3px solid var(--gold); box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; }
         .marquee-box { background: #111; color: #fff; padding: 6px; font-weight: bold; font-size: 13px; border-bottom: 1px solid var(--gold); }
         
-        /* WATCH & EARN HIGHLIGHT BOX */
         .vip-earn-box { background: linear-gradient(135deg, #ffffff, #fff9e6); margin: 15px; padding: 20px; border-radius: 20px; border: 3px solid var(--gold); box-shadow: 0 8px 25px rgba(243, 156, 18, 0.25); text-align: center; position: relative; overflow: hidden; }
         .vip-badge { position: absolute; top: 0; right: 0; background: var(--red); color: white; padding: 4px 15px; font-size: 11px; font-weight: bold; border-bottom-left-radius: 12px; }
         .vip-title { font-size: 20px; font-weight: 900; color: #2c3e50; margin-bottom: 8px; }
@@ -28,7 +27,7 @@
         .pg-container { background: #e0e0e0; height: 12px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
         .pg-bar { background: linear-gradient(90deg, #f39c12, #f1c40f); height: 100%; width: 0%; transition: 0.5s; }
         
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; display: block; text-decoration: none; text-align: center; font-size: 14px; user-select: none; position: relative; z-index: 10; outline: none; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; display: block; text-decoration: none; text-align: center; font-size: 14px; outline: none; }
         .btn:hover { opacity: 0.9; }
         .btn:active { transform: scale(0.98); }
         .btn-dark { background: var(--dark); color: white; }
@@ -39,7 +38,6 @@
         .scroll-box { display: flex; overflow-x: auto; padding: 10px; gap: 12px; }
         .draw-box { min-width: 150px; background: white; padding: 15px; border-radius: 14px; border: 2px solid var(--dark); text-align: center; color: #000; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
 
-        /* Video Section UI */
         .section-header { display: flex; justify-content: space-between; align-items: center; margin: 18px 14px 8px 14px; }
         .section-title { font-size: 16px; font-weight: 800; color: var(--dark); display: flex; align-items: center; gap: 6px; }
         .badge-live { background: #e74c3c; color: white; font-size: 10px; padding: 3px 8px; border-radius: 12px; }
@@ -56,7 +54,6 @@
         .code-box input { margin: 0; flex: 1; border: 2px solid #ddd; padding: 10px; border-radius: 8px; font-size: 14px; }
         .code-box button { width: auto; padding: 0 20px; margin: 0; font-size: 13px; }
 
-        /* Popup Styling */
         #popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; color: white; padding: 20px; text-align: center; overflow-y: auto; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-weight: bold; color: #000; outline: none; }
         .list-item { background: #222; padding: 12px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); }
@@ -68,28 +65,26 @@
 
 <div class="marquee-box"><marquee>🔥 Watch Youtube Videos, Enter Code & Earn Real Cash Daily! 🔥</marquee></div>
 
-<div class="header" id="headBtn">
+<div class="header" onclick="adminMode()">
     <h1 style="margin:0; font-size:18px; letter-spacing:1px;">DKJ KNOWLEDGE JACKPOT</h1>
     <div id="uHi" style="font-size: 11px; color: #d1d8e0; margin-top: 5px;">Welcome Guest (Click for Admin)</div>
 </div>
 
 <div id="congrats">🎊 CONGRATULATIONS! YOU WON! 🎊</div>
 
-<!-- WATCH & EARN VIP BOX -->
 <div class="vip-earn-box">
     <div class="vip-badge">HOT DEAL 🔥</div>
     <div class="vip-title">📺 WATCH VIDEO & EARN MONEY 💰</div>
     <div class="vip-sub">Video dekho, Secret Code dhundho aur turant Wallet balance mein Cash pao!</div>
-    <button class="btn btn-gold btn-large" id="btnWatchNow">▶️ WATCH VIDEOS NOW (EARN ₹5 - ₹15)</button>
+    <button class="btn btn-gold btn-large" onclick="openVideoModal()">▶️ WATCH VIDEOS NOW (EARN ₹5 - ₹15)</button>
 </div>
 
 <div class="card">
     <p style="margin:0; font-weight:bold; color: #7f8c8d; font-size: 12px;">MY WALLET BALANCE</p>
     <div class="bal-text" id="vBal">₹0</div>
-    <button class="btn btn-dark" id="btnWithdraw">WITHDRAW MONEY (MIN ₹200)</button>
+    <button class="btn btn-dark" onclick="showWithdrawForm()">WITHDRAW MONEY (MIN ₹200)</button>
 </div>
 
-<!-- WATCH & EARN SECTION -->
 <div class="section-header">
     <div class="section-title">📺 DAILY WATCH & EARN TASK</div>
     <span class="badge-live">● 5 VIDEOS AVAILABLE</span>
@@ -100,32 +95,30 @@
 <div class="card">
     <p style="margin:0; font-size:12px; font-weight:bold; color:#555;">JACKPOT DRAW PROGRESS: <span id="pgTxt">0%</span></p>
     <div class="pg-container"><div class="pg-bar" id="pBar"></div></div>
-    <button class="btn btn-gold" id="btnCopyInvite">📋 COPY INVITE LINK</button>
+    <button class="btn btn-gold" onclick="copyInvite()">📋 COPY INVITE LINK</button>
 </div>
 
 <div class="scroll-box">
-    <div class="draw-box" style="border-color: var(--gold);"><h3>MEGA</h3><h2>₹100</h2><button class="btn btn-dark" id="btnJoin100">JOIN NOW</button></div>
+    <div class="draw-box" style="border-color: var(--gold);"><h3>MEGA</h3><h2>₹100</h2><button class="btn btn-dark" onclick="joinDraw(100)">JOIN NOW</button></div>
     <div class="draw-box" style="opacity:0.6; background:#eee;"><h3>SILVER</h3><h2>₹200</h2><button class="btn" style="background:#888; color:white; cursor:not-allowed;">LOCKED</button></div>
     <div class="draw-box" style="opacity:0.6; background:#eee;"><h3>GOLD</h3><h2>₹500</h2><button class="btn" style="background:#888; color:white; cursor:not-allowed;">LOCKED</button></div>
 </div>
 
-<!-- ACCOUNT & ACTION BUTTONS -->
 <div style="padding: 10px;">
-    <button id="rBtn" class="btn btn-gold">➕ CREATE ACCOUNT</button>
-    <button id="lBtn" class="btn btn-dark">🔑 LOGIN ACCOUNT</button>
-    <button id="pBtn" class="btn btn-dark">👤 MY PROFILE & CODES</button>
-    <button id="wBtn" class="btn btn-gold">🏆 TOP WINNERS (MIN ₹200)</button>
-    <button id="tcBtn" class="btn" style="background:#444; color:white;">📄 TERMS & CONDITIONS</button>
+    <button class="btn btn-gold" onclick="showReg()">➕ CREATE ACCOUNT</button>
+    <button class="btn btn-dark" onclick="showLogin()">🔑 LOGIN ACCOUNT</button>
+    <button class="btn btn-dark" onclick="showProfile()">👤 MY PROFILE & CODES</button>
+    <button class="btn btn-gold" onclick="showWinners()">🏆 TOP WINNERS (MIN ₹200)</button>
+    <button class="btn" style="background:#444; color:white;" onclick="showTC()">📄 TERMS & CONDITIONS</button>
     <a href="https://t.me/dkj_knowledge_jackoprt" target="_blank" class="btn btn-tg">📢 TELEGRAM CHANNEL</a>
 </div>
 
 <div id="popup">
     <div id="pContent"></div>
-    <button id="closePopupBtn" class="btn" style="margin-top:20px; background:#e74c3c; color:white; padding:12px 40px; border-radius:10px;">CLOSE</button>
+    <button class="btn" style="margin-top:20px; background:#e74c3c; color:white; padding:12px 40px; border-radius:10px;" onclick="closePopup()">CLOSE</button>
 </div>
 
 <script>
-window.onload = function() {
     let currentUser = JSON.parse(localStorage.getItem('dkj_user_login')) || null;
 
     const firebaseConfig = {
@@ -138,8 +131,11 @@ window.onload = function() {
         appId: "1:598164039811:web:27420c0d7ecedf28fb53b6"
     };
 
-    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-    const database = firebase.database();
+    try {
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    } catch(e) { console.error("Firebase Init Error:", e); }
+
+    const database = firebase.database ? firebase.database() : null;
     const TG_BOT = "8357735991:AAHUnhnXj0MaNi-Z1XtitwMy994xssKRsyg";
     const TG_ID = "8072402346";
 
@@ -162,6 +158,7 @@ window.onload = function() {
 
     function renderVideos() {
         const container = document.getElementById('videoContainer');
+        if(!container) return;
         container.innerHTML = "";
         ytVideos.forEach(v => {
             container.innerHTML += `
@@ -175,13 +172,13 @@ window.onload = function() {
                     </div>
                     <div class="code-box">
                         <input id="code_input_${v.id}" placeholder="Enter Code">
-                        <button class="btn btn-gold sub-code-btn" onclick="submitVideoCode('${v.id}')">SUBMIT</button>
+                        <button class="btn btn-gold" onclick="submitVideoCode('${v.id}')">SUBMIT</button>
                     </div>
                 </div>`;
         });
     }
 
-    window.submitVideoCode = function(vId, customCode) {
+    function submitVideoCode(vId, customCode) {
         if(!currentUser) return alert("Pehle Login ya Register karein!");
         const v = ytVideos.find(x => x.id === vId);
         const inputCode = customCode || document.getElementById('code_input_' + vId).value.trim();
@@ -189,21 +186,23 @@ window.onload = function() {
         if(!inputCode) return alert("Secret Code enter karein!");
         if(inputCode.toUpperCase() !== v.secretCode.toUpperCase()) { return alert("Galat Code!"); }
 
-        database.ref('users/' + currentUser.mob).once('value', snapshot => {
-            let userVal = snapshot.val() || {};
-            let claimed = userVal.claimedVideos || {};
-            if(claimed[vId]) return alert("Aap is video ka reward pehle hi le chuke hain!");
+        if(database) {
+            database.ref('users/' + currentUser.mob).once('value', snapshot => {
+                let userVal = snapshot.val() || {};
+                let claimed = userVal.claimedVideos || {};
+                if(claimed[vId]) return alert("Aap is video ka reward pehle hi le chuke hain!");
 
-            let newBal = (userVal.bal || 0) + v.reward;
-            database.ref('users/' + currentUser.mob).update({
-                bal: newBal,
-                [claimedVideos/${vId}]: true
-            }).then(() => {
-                alert(Badhai ho! ₹${v.reward} Wallet mein add ho gaye!);
-                location.reload();
+                let newBal = (userVal.bal || 0) + v.reward;
+                database.ref('users/' + currentUser.mob).update({
+                    bal: newBal,
+                    [claimedVideos/${vId}]: true
+                }).then(() => {
+                    alert(Badhai ho! ₹${v.reward} Wallet mein add ho gaye!);
+                    location.reload();
+                });
             });
-        });
-    };
+        }
+    }
 
     function openVideoModal() {
         let h = "<h2>📺 WATCH & EARN VIDEOS</h2><p style='font-size:12px;'>Niche di gayi videos dekhein aur code enter karein:</p>";
@@ -224,27 +223,7 @@ window.onload = function() {
         document.getElementById('popup').style.display = 'block';
     }
 
-    function syncData() {
-        database.ref('/').on('value', (snapshot) => {
-            const data = snapshot.val() || {};
-            const users = data.users || {};
-            if(currentUser && users[currentUser.mob]) {
-                currentUser = users[currentUser.mob];
-                localStorage.setItem('dkj_user_login', JSON.stringify(currentUser));
-                document.getElementById('uHi').innerText = "Hi, " + currentUser.name + " (ID: "+currentUser.mob+")";
-                document.getElementById('vBal').innerText = "₹" + (currentUser.bal || 0);
-                document.getElementById('congrats').style.display = currentUser.isWinner ? "block" : "none";
-            }
-            let count = Object.keys(users).length;
-            let p = Math.min((count / 1000) * 100, 100);
-            document.getElementById('pBar').style.width = p + "%";
-            document.getElementById('pgTxt').innerText = Math.floor(p) + "%";
-        });
-    }
-
-    // Attach Button Click Handlers Explicitly
-    document.getElementById('btnWatchNow').onclick = openVideoModal;
-    document.getElementById('btnWithdraw').onclick = () => {
+    function showWithdrawForm() {
         if(!currentUser) return alert("Pehle Login Karein!");
         if((currentUser.bal || 0) < 200) return alert("Minimum withdrawal limit ₹200 hai!");
         document.getElementById('pContent').innerHTML = `
@@ -255,38 +234,47 @@ window.onload = function() {
             <input id="w2" placeholder="Bank Name">
             <input id="w3" placeholder="Account Number">
             <input id="w4" placeholder="IFSC Code">
-            <button class="btn btn-gold" id="doWithdrawBtn">SUBMIT REQUEST</button>`;
+            <button class="btn btn-gold" onclick="doWithdraw()">SUBMIT REQUEST</button>`;
         document.getElementById('popup').style.display = 'block';
-        document.getElementById('doWithdrawBtn').onclick = () => {
-            let reqAmt = parseInt(document.getElementById('wAmt').value);
-            if(!reqAmt || reqAmt < 200 || reqAmt > currentUser.bal) return alert("Invalid Amount!");
-            let newBal = currentUser.bal - reqAmt;
+    }
+
+    function doWithdraw() {
+        let reqAmt = parseInt(document.getElementById('wAmt').value);
+        if(!reqAmt || reqAmt < 200 || reqAmt > currentUser.bal) return alert("Invalid Amount!");
+        let newBal = currentUser.bal - reqAmt;
+        if(database) {
             database.ref('users/' + currentUser.mob).update({ bal: newBal }).then(() => {
                 alert("Withdrawal request sent!");
                 closePopup();
             });
-        };
-    };
+        }
+    }
 
-    document.getElementById('rBtn').onclick = () => {
-        document.getElementById('pContent').innerHTML = <h2>REGISTER NEW ACCOUNT</h2><input id="rn" placeholder="Full Name"><input id="rm" type="number" placeholder="Mobile Number"><input id="rp" type="password" placeholder="Set Password"><button class="btn btn-gold" id="doRegBtn">CREATE ACCOUNT NOW</button>;
+    function showReg() {
+        document.getElementById('pContent').innerHTML = <h2>REGISTER NEW ACCOUNT</h2><input id="rn" placeholder="Full Name"><input id="rm" type="number" placeholder="Mobile Number"><input id="rp" type="password" placeholder="Set Password"><button class="btn btn-gold" onclick="doReg()">CREATE ACCOUNT NOW</button>;
         document.getElementById('popup').style.display = 'block';
-        document.getElementById('doRegBtn').onclick = () => {
-            let n=document.getElementById('rn').value.trim(), m=document.getElementById('rm').value.trim(), p=document.getElementById('rp').value.trim();
-            if(!n||!m||!p) return alert("Fill all details!");
+    }
+
+    function doReg() {
+        let n=document.getElementById('rn').value.trim(), m=document.getElementById('rm').value.trim(), p=document.getElementById('rp').value.trim();
+        if(!n||!m||!p) return alert("Fill all details!");
+        if(database) {
             database.ref('users/'+m).set({ name: n, mob: m, pass: p, bal: 0, isWinner: false }).then(() => {
                 currentUser = { name: n, mob: m, bal: 0 };
                 localStorage.setItem('dkj_user_login', JSON.stringify(currentUser));
                 alert("Account Created!"); location.reload();
             });
-        };
-    };
+        }
+    }
 
-    document.getElementById('lBtn').onclick = () => {
-        document.getElementById('pContent').innerHTML = <h2>LOGIN ACCOUNT</h2><input id="lm" type="number" placeholder="Mobile Number"><input id="lp" type="password" placeholder="Password"><button class="btn btn-gold" id="doLoginBtn">LOGIN NOW</button>;
+    function showLogin() {
+        document.getElementById('pContent').innerHTML = <h2>LOGIN ACCOUNT</h2><input id="lm" type="number" placeholder="Mobile Number"><input id="lp" type="password" placeholder="Password"><button class="btn btn-gold" onclick="doLogin()">LOGIN NOW</button>;
         document.getElementById('popup').style.display = 'block';
-        document.getElementById('doLoginBtn').onclick = () => {
-            let m=document.getElementById('lm').value.trim(), p=document.getElementById('lp').value.trim();
+    }
+
+    function doLogin() {
+        let m=document.getElementById('lm').value.trim(), p=document.getElementById('lp').value.trim();
+        if(database) {
             database.ref('users/'+m).once('value', s => {
                 let u = s.val();
                 if(u && u.pass == p) { 
@@ -295,40 +283,53 @@ window.onload = function() {
                     location.reload(); 
                 } else { alert("Wrong Details!"); }
             });
-        };
-    };
+        }
+    }
 
-    document.getElementById('pBtn').onclick = () => {
+    function showProfile() {
         if(!currentUser) return alert("Login First!");
-        document.getElementById('pContent').innerHTML = <h2>MY PROFILE</h2><p>Name: ${currentUser.name}</p><p>Mobile: ${currentUser.mob}</p><p>Balance: ₹${currentUser.bal||0}</p><button class="btn btn-dark" id="logoutBtn">LOGOUT</button>;
+        document.getElementById('pContent').innerHTML = <h2>MY PROFILE</h2><p>Name: ${currentUser.name}</p><p>Mobile: ${currentUser.mob}</p><p>Balance: ₹${currentUser.bal||0}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>;
         document.getElementById('popup').style.display = 'block';
-        document.getElementById('logoutBtn').onclick = () => { localStorage.clear(); location.reload(); };
-    };
+    }
 
-    document.getElementById('wBtn').onclick = () => {
+    function logout() { localStorage.clear(); location.reload(); }
+
+    function showWinners() {
         let h = "<h2>🏆 TOP WINNERS (MIN ₹200)</h2>";
         demoWinners.forEach(w => {
             h += <div class="list-item"><span class="win-amt">₹${w.prize}</span><b>${w.name}</b><br><small>Mob: ${w.mob} | Ticket: ${w.code}</small></div>;
         });
         document.getElementById('pContent').innerHTML = h;
         document.getElementById('popup').style.display = 'block';
-    };
+    }
 
-    document.getElementById('tcBtn').onclick = () => {
+    function showTC() {
         document.getElementById('pContent').innerHTML = <h2>TERMS & CONDITIONS</h2><p style="text-align:left; font-size:13px;">1. Free account creation.<br>2. Minimum withdrawal ₹200.<br>3. Fast payout in 24 hours.</p>;
         document.getElementById('popup').style.display = 'block';
-    };
+    }
 
-    document.getElementById('btnCopyInvite').onclick = () => {
+    function copyInvite() {
         navigator.clipboard.writeText(window.location.href);
         alert("Invite Link Copied!");
+    }
+
+    function joinDraw(amt) {
+        if(!currentUser) return alert("Pehle Login Karein!");
+        alert("Payment Gateway Feature coming soon!");
+    }
+
+    function adminMode() {
+        let pw = prompt("Admin Password:"); if(pw !== "7860") return;
+        alert("Welcome Admin!");
+    }
+
+    window.onload = function() {
+        renderVideos();
+        if(currentUser) {
+            document.getElementById('uHi').innerText = "Hi, " + currentUser.name;
+            document.getElementById('vBal').innerText = "₹" + (currentUser.bal || 0);
+        }
     };
-
-    document.getElementById('closePopupBtn').onclick = closePopup;
-
-    renderVideos();
-    syncData();
-};
 </script>
 </body>
 </html>
