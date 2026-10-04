@@ -58,7 +58,6 @@
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-weight: bold; color: #000; outline: none; }
         .list-item { background: #222; padding: 12px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); }
         .win-amt { float: right; color: var(--green); font-weight: bold; font-size: 16px; }
-        #congrats { display:none; color: gold; font-size: 20px; font-weight: bold; margin-top:10px; text-align:center; }
     </style>
 </head>
 <body>
@@ -69,8 +68,6 @@
     <h1 style="margin:0; font-size:18px; letter-spacing:1px;">DKJ KNOWLEDGE JACKPOT</h1>
     <div id="uHi" style="font-size: 11px; color: #d1d8e0; margin-top: 5px;">Welcome Guest (Click for Admin)</div>
 </div>
-
-<div id="congrats">🎊 CONGRATULATIONS! YOU WON! 🎊</div>
 
 <div class="vip-earn-box">
     <div class="vip-badge">HOT DEAL 🔥</div>
@@ -132,12 +129,12 @@
     };
 
     try {
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) { 
+            firebase.initializeApp(firebaseConfig); 
+        }
     } catch(e) { console.error("Firebase Init Error:", e); }
 
-    const database = firebase.database ? firebase.database() : null;
-    const TG_BOT = "8357735991:AAHUnhnXj0MaNi-Z1XtitwMy994xssKRsyg";
-    const TG_ID = "8072402346";
+    const database = (typeof firebase !== 'undefined' && firebase.database) ? firebase.database() : null;
 
     const ytVideos = [
         { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytId: "dQw4w9WgXcQ", reward: 5, secretCode: "DKJ101" },
@@ -154,7 +151,9 @@
         { name: "Priya Singh", prize: 1500, mob: "919102XXXX", code: "DKJ-5041" }
     ];
 
-    function closePopup() { document.getElementById('popup').style.display = 'none'; }
+    function closePopup() { 
+        document.getElementById('popup').style.display = 'none'; 
+    }
 
     function renderVideos() {
         const container = document.getElementById('videoContainer');
@@ -181,7 +180,8 @@
     function submitVideoCode(vId, customCode) {
         if(!currentUser) return alert("Pehle Login ya Register karein!");
         const v = ytVideos.find(x => x.id === vId);
-        const inputCode = customCode || document.getElementById('code_input_' + vId).value.trim();
+        const inputElem = document.getElementById('code_input_' + vId);
+        const inputCode = customCode || (inputElem ? inputElem.value.trim() : "");
         
         if(!inputCode) return alert("Secret Code enter karein!");
         if(inputCode.toUpperCase() !== v.secretCode.toUpperCase()) { return alert("Galat Code!"); }
@@ -201,6 +201,8 @@
                     location.reload();
                 });
             });
+        } else {
+            alert("Database connected nahi hai!");
         }
     }
 
@@ -326,8 +328,10 @@
     window.onload = function() {
         renderVideos();
         if(currentUser) {
-            document.getElementById('uHi').innerText = "Hi, " + currentUser.name;
-            document.getElementById('vBal').innerText = "₹" + (currentUser.bal || 0);
+            const uHi = document.getElementById('uHi');
+            const vBal = document.getElementById('vBal');
+            if(uHi) uHi.innerText = "Hi, " + currentUser.name;
+            if(vBal) vBal.innerText = "₹" + (currentUser.bal || 0);
         }
     };
 </script>
