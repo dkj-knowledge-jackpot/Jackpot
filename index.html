@@ -1,343 +1,456 @@
-<!DOCTYPE html>
-<html lang="hi">
+<!DOCTYPEhtml>
+<htmllang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DKJ KNOWLEDGE JACKPOT - WATCH & EARN</title>
-    <!-- Firebase Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<metacharset="UTF-8">
+<metaname="viewport"content="width=device-width,initial-scale=1.0">
+<title>DKJKNOWLEDGEJACKPOT-WATCH&EARN</title>
+<!--FirebaseScripts-->
+<scriptsrc="https://www.gstatic
+.com/firebasejs/8.10.1/firebase-app
+.js"></script>
+<scriptsrc="https://www.gstatic
+.com/firebasejs/8.10.1/firebase
+-database.js"></script>
 
-    <style>
-        :root { --gold: #f39c12; --dark: #0f2027; --tg-blue: #0088cc; --green: #27ae60; --red: #e74c3c; }
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f3; margin: 0; padding-bottom: 90px; }
-        
-        .header { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: var(--gold); padding: 15px; text-align: center; border-bottom: 3px solid var(--gold); box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; }
-        .marquee-box { background: #111; color: #fff; padding: 6px; font-weight: bold; font-size: 13px; border-bottom: 1px solid var(--gold); }
-        
-        .vip-earn-box { background: linear-gradient(135deg, #ffffff, #fff9e6); margin: 15px; padding: 20px; border-radius: 20px; border: 3px solid var(--gold); box-shadow: 0 8px 25px rgba(243, 156, 18, 0.25); text-align: center; position: relative; overflow: hidden; }
-        .vip-badge { position: absolute; top: 0; right: 0; background: var(--red); color: white; padding: 4px 15px; font-size: 11px; font-weight: bold; border-bottom-left-radius: 12px; }
-        .vip-title { font-size: 20px; font-weight: 900; color: #2c3e50; margin-bottom: 8px; }
-        .vip-sub { font-size: 13px; color: #666; margin-bottom: 15px; font-weight: 600; }
-        
-        .card { background: white; margin: 14px; padding: 18px; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e1e8ed; }
-        .bal-text { font-size: 38px; color: var(--green); font-weight: 800; margin: 8px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
-        
-        .pg-container { background: #e0e0e0; height: 12px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
-        .pg-bar { background: linear-gradient(90deg, #f39c12, #f1c40f); height: 100%; width: 0%; transition: 0.5s; }
-        
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; display: block; text-decoration: none; text-align: center; font-size: 14px; outline: none; }
-        .btn:hover { opacity: 0.9; }
-        .btn:active { transform: scale(0.98); }
-        .btn-dark { background: var(--dark); color: white; }
-        .btn-gold { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3); }
-        .btn-tg { background: var(--tg-blue); color: white; }
-        .btn-large { padding: 16px; font-size: 16px; border-radius: 12px; }
-        .btn-yt { background: #ff0000; color: white; font-weight: bold; padding: 10px; border-radius: 8px; text-decoration: none; display: inline-block; margin-bottom: 8px; }
-        
-        .scroll-box { display: flex; overflow-x: auto; padding: 10px; gap: 12px; }
-        .draw-box { min-width: 150px; background: white; padding: 15px; border-radius: 14px; border: 2px solid var(--dark); text-align: center; color: #000; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
+<style>
+:root{--gold:#f39c12;--dark:#0f2027;--tg-blue:#0088cc;
+--green:#27ae60;--red:#e74c3c;}
+*{box-sizing:border-box;}body{font-family:'Segoe
+UI',Tahoma,Geneva,Verdana,sans-serif;background:#eef2f3;
+margin:0;padding-bottom:90px;}
 
-        #popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; color: white; padding: 20px; text-align: center; overflow-y: auto; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-weight: bold; color: #000; outline: none; }
-        .list-item { background: #222; padding: 12px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); }
-        .win-amt { float: right; color: var(--green); font-weight: bold; font-size: 16px; }
-    </style>
+.header{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:
+var(--gold);padding:15px;
+text-align:center;border-bottom:3pxsolidvar(--gold);box-shadow:04px10pxrgba(0,0,0,0.3);cursor:pointer; }
+.marquee-box{background:#111;color:#fff;padding:6px;font-weight:bold;font-size:13px;border-bottom:1pxsolidvar(--gold);}
+
+.vip-earn-box{background:linear-gradient(135deg,#ffffff,#fff9e6);margin:15px;padding:20px;border-radius:20px;border:3pxsolidvar(--gold);box-shadow:08px25pxrgba(243,156,18,0.25);
+text-align:center;position:relative;overflow:hidden;}
+.vip-badge{position:absolute;top:0;right:0;background: var(--red);color:white;padding:4px15px;
+font-size:11px;font-weight:bold;border-bottom-left-radius:12px;}
+.vip-title{font-size:20px;font-weight: 900;color:#2c3e50;margin-bottom:8px;}
+.vip-sub{font-size:13px;color:#666;margin-bottom:15px;font-weight:600;}
+
+.card{background:white;margin:14px;padding:18px;border-radius:16px;box-shadow:05px15pxrgba(0,0,0,0.08);
+text-align:center;border:1pxsolid#e1e8ed;}
+.bal-text{font-size:38px;color:var(--green);font-weight:800;margin:8px0;text-shadow:1px1px2pxrgba(0,0,0,0.1);}
+
+.pg-container{background:#e0e0e0;height:12px;
+border-radius:10px;margin:10px0;overflow:hidden;}
+.pg-bar{background:linear-gradient(90deg,#f39c12,
+#f1c40f);height:100%;width:0%;transition:0.5s;}
+
+.btn{width:100%;padding:14px;border:none;border-radius:10px;font-weight:bold;cursor:pointer;margin-top:10px;display:block;text-decoration:none;
+text-align:center;font-size:14px;outline:none;}
+.btn:hover{opacity:0.9;}
+.btn:active{transform:scale(0.98);}
+.btn-dark{background:var(--dark);color:white;}
+.btn-gold{background:linear-gradient(135deg,#f39c12,#e67e22);color:white;
+box-shadow:04px10pxrgba(243,156,18,0.3);}
+.btn-tg{background:var(--tg-blue);color:white;}
+.btn-large{padding:16px;font-size:16px;border-radius:12px;}
+.btn-yt{background:#ff0000;color:white;font-weight:bold;padding:10px;border-radius:8px;text-decoration:none;display:inline-block;margin-bottom:8px;}
+
+.scroll-box{display:flex;overflow-x:auto;padding:10px;gap:12px;}
+.draw-box {min-width:150px;background: white;padding:15px;border-radius:14px;border:2pxsolid var(--dark);text-align:center;color:#000;box-shadow:03px8pxrgba(0,0,0,0.05);}
+
+#popup{display:none;position: fixed;top:0; left:0;width:100%;height:100%;background:
+rgba(0,0,0,0.92);z-index:9999;color:white;padding:20px;text-align:center;overflow-y:auto;}
+input{width:100%;padding:12px;margin:8px0;border-radius:8px;border:none;font-weight:bold;color:#000;outline:none;}
+.list-item {background:#222;padding: 12px;border-radius:8px;margin-bottom:8px;text-align:left;border-left:4pxsolid
+var(--gold);}
+.win-amt{float:right;color:var(--green);font-weight:bold;font-size:16px;}
+</style>
 </head>
 <body>
 
-<div class="marquee-box"><marquee>🔥 Watch Youtube Videos, Enter Code & Earn Real Cash Daily! 🔥</marquee></div>
+<div
+class="marquee-box"><marquee>
+🔥WatchYoutubeVideos,EnterCode&EarnRealCashDaily!🔥</marquee></div>
 
-<div class="header" onclick="adminMode()">
-    <h1 style="margin:0; font-size:18px; letter-spacing:1px;">DKJ KNOWLEDGE JACKPOT</h1>
-    <div id="uHi" style="font-size: 11px; color: #d1d8e0; margin-top: 5px;">Welcome Guest (Click for Admin)</div>
+<divclass="header"onclick="adminMode()">
+<h1style="margin:0;font-size:18px;
+letter-spacing:1px;">DKJKNOWLEDGE JACKPOT</h1>
+<divid="uHi"style="font-size:11px;color:#d1d8e0;margin-top:5px;">WelcomeGuest(ClickforAdmin)</div>
 </div>
 
-<div class="vip-earn-box">
-    <div class="vip-badge">HOT DEAL 🔥</div>
-    <div class="vip-title">📺 WATCH VIDEO & EARN MONEY 💰</div>
-    <div class="vip-sub">Video dekho, Secret Code dhundho aur turant Wallet balance mein Cash pao!</div>
-    <button class="btn btn-gold btn-large" onclick="openVideoModal()">▶️ WATCH VIDEOS NOW (EARN ₹5 - ₹15)</button>
+<divclass="vip-earn-box">
+<divclass="vip-badge">HOTDEAL🔥</div>
+<divclass="vip-title">📺WATCHVIDEO&EARNMONEY💰</div>
+<divclass="vip-sub">Videodekho,SecretCodedhundhoaurturantWalletbalancemeinCashpao!</div>
+<buttonclass="btnbtn-goldbtn-large"
+onclick="openVideoModal()">▶WATCHVIDEOSNOW(EARN₹5-
+₹15)</button>
 </div>
 
-<div class="card">
-    <p style="margin:0; font-weight:bold; color: #7f8c8d; font-size: 12px;">MY WALLET BALANCE</p>
-    <div class="bal-text" id="vBal">₹0</div>
-    <button class="btn btn-dark" onclick="showWithdrawForm()">WITHDRAW MONEY (MIN ₹200)</button>
+<divclass="card">
+<pstyle="margin:0;
+font-weight:bold;color:#7f8c8d;font-size:12px;">MYWALLETBALANCE</p>
+<divclass="bal-text"id="vBal">₹0</div>
+<buttonclass="btnbtn-dark"onclick="showWithdrawForm()">WITHDRAWMONEY(MIN₹200)</
+button>
 </div>
 
-<div class="card">
-    <p style="margin:0; font-size:12px; font-weight:bold; color:#555;">JACKPOT DRAW PROGRESS: <span id="pgTxt">0%</span></p>
-    <div class="pg-container"><div class="pg-bar" id="pBar"></div></div>
-    <button class="btn btn-gold" onclick="copyInvite()">📋 COPY INVITE LINK</button>
+<divclass="card">
+<pstyle="margin:0;
+font-size:12px;font-weight:bold;color:#555;">JACKPOTDRAW
+PROGRESS:<spanid="pgTxt">0%</span></p>
+<divclass="pg-container"><divclass="pg-bar"id="pBar"></div></div>
+<buttonclass="btnbtn-gold"onclick="copyInvite()">📋COPYINVITELINK</button>
 </div>
 
-<div class="scroll-box">
-    <div class="draw-box" style="border-color: var(--gold);"><h3>MEGA</h3><h2>₹100</h2><button class="btn btn-dark" onclick="joinDraw(100)">JOIN NOW</button></div>
-    <div class="draw-box" style="opacity:0.6; background:#eee;"><h3>SILVER</h3><h2>₹200</h2><button class="btn" style="background:#888; color:white; cursor:not-allowed;">LOCKED</button></div>
-    <div class="draw-box" style="opacity:0.6; background:#eee;"><h3>GOLD</h3><h2>₹500</h2><button class="btn" style="background:#888; color:white; cursor:not-allowed;">LOCKED</button></div>
+<divclass="scroll-box">
+<divclass="draw-box"style="border-color:
+var(--gold);"><h3>MEGA</h3><h2>₹100</h2><buttonclass="btnbtn-dark"onclick="joinDraw(100)">JOINNOW</button></div>
+<divclass="draw-box"style="opacity:0.6;background:#eee;"><h3>SILVER</h3><h2>₹200</
+h2><buttonclass="btn"style="background:#888;color:white;
+cursor:not-allowed;">LOCKED</button></div>
+<divclass="draw-box"style="opacity:0.6;background:#eee;"><h3>GOLD</h3><h2>₹500</
+h2><buttonclass="btn"style="background:#888;color:white;
+cursor:not-allowed;">LOCKED</button></div>
 </div>
 
-<div style="padding: 10px;">
-    <button class="btn btn-gold" onclick="showReg()">➕ CREATE ACCOUNT</button>
-    <button class="btn btn-dark" onclick="showLogin()">🔑 LOGIN ACCOUNT</button>
-    <button class="btn btn-dark" onclick="showProfile()">👤 MY PROFILE & CODES</button>
-    <button class="btn btn-gold" onclick="showWinners()">🏆 TOP WINNERS (MIN ₹200)</button>
-    <button class="btn" style="background:#444; color:white;" onclick="showTC()">📄 TERMS & CONDITIONS</button>
-    <a href="https://t.me/dkj_knowledge_jackoprt" target="_blank" class="btn btn-tg">📢 TELEGRAM CHANNEL</a>
+<divstyle="padding:10px;">
+<buttonclass="btnbtn-gold"onclick="showReg()">➕CREATEACCOUNT</button>
+<buttonclass="btnbtn-dark"onclick="showLogin()">🔑LOGINACCOUNT</button>
+<buttonclass="btnbtn-dark"onclick="showProfile()">👤MYPROFILE&CODES</button>
+<buttonclass="btnbtn-gold"onclick="showWinners()">🏆TOPWINNERS(MIN₹200)</button>
+<buttonclass="btn"style="background:#444;color:white;"onclick="showTC()">
+📄TERMS&CONDITIONS</button>
+<ahref="https://t.me
+/dkj_knowledge_jackoprt"target="_blank"class="btn
+btn-tg">📢TELEGRAM CHANNEL</
+a>
 </div>
 
-<div id="popup">
-    <div id="pContent"></div>
-    <button class="btn" style="margin-top:20px; background:#e74c3c; color:white; padding:12px 40px; border-radius:10px;" onclick="closePopup()">CLOSE</button>
+<divid="popup">
+<divid="pContent"></div>
+<buttonclass="btn"style="margin-top:20px;background:#e74c3c;color:white;padding:12px40px;border-radius:10px;"
+onclick="closePopup()">CLOSE</button>
 </div>
 
 <script>
-    let currentUser = JSON.parse(localStorage.getItem('dkj_user_login')) || null;
+letcurrentUser=JSON.parse(localStorage.getItem('dkj_user_login'))||null;
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBcdlUy_CAFZbQPPzOzGTkofvvSSdXe6r4",
-        authDomain: "dkj-jackpot.firebaseapp.com",
-        databaseURL: "https://dkj-jackpot-default-rtdb.firebaseio.com",
-        projectId: "dkj-jackpot",
-        storageBucket: "dkj-jackpot.firebasestorage.app",
-        messagingSenderId: "598164039811",
-        appId: "1:598164039811:web:27420c0d7ecedf28fb53b6"
-    };
+constfirebaseConfig={
+apiKey:"AIzaSyBcdlUy_CAFZbQPPzOzGTkofvvSSdXe6r4",
+authDomain:
+"dkj-jackpot.firebaseapp.com",databaseURL:"https://dkj
+-jackpot-default-rtdb.firebaseio
+.com",
+projectId:"dkj-jackpot",storageBucket:
+"dkj-jackpot.firebasestorage.app",messagingSenderId:
+"598164039811",
+appId:"1:598164039811:web:27
+420c0d7ecedf28fb53b6"
+};
 
-    try {
-        if (typeof firebase !== 'undefined' && !firebase.apps.length) { 
-            firebase.initializeApp(firebaseConfig); 
-        }
-    } catch(e) { console.error("Firebase Init Error:", e); }
+try{
+if(typeoffirebase!
+=='undefined'&&!firebase.apps.length){
+firebase.initializeApp(firebaseConfig);
+}
+}catch(e)
+{console.error("FirebaseInitError:",e);}
 
-    const database = (typeof firebase !== 'undefined' && firebase.database) ? firebase.database() : null;
-    
-    // Telegram Bot Details
-    const TG_BOT_TOKEN = "8357735991:AAHUnhnXj0MaNi-Z1XtitwMy994xssKRsyg";
-    const TG_CHAT_ID = "8072402346";
+constdatabase=(typeoffirebase!=='undefined'
+&&firebase.database)?firebase.database():null;
 
-    const ytVideos = [
-        { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", reward: 5, secretCode: "DKJ101" },
-        { id: "v2", title: "🔥 Video 2: Mega Jackpot Winning Tricks", ytUrl: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ", reward: 10, secretCode: "DKJ202" },
-        { id: "v3", title: "🧠 Video 3: Daily Quiz Bonus Video", ytUrl: "https://www.youtube.com/watch?v=L_LUpnjgPso", reward: 5, secretCode: "DKJ303" },
-        { id: "v4", title: "💰 Video 4: Special ₹15 Reward Video", ytUrl: "https://www.youtube.com/watch?v=fJ9rUzIMcZQ", reward: 15, secretCode: "DKJ404" },
-        { id: "v5", title: "🎁 Video 5: Secret Giveaway Code", ytUrl: "https://www.youtube.com/watch?v=kJQP7kiw5Fk", reward: 10, secretCode: "DKJ505" }
-    ];
+//TelegramBotDetailsconstTG_BOT_TOKEN=
+"8357735991:AAHUnhnXj0MaNi-Z1
+XtitwMy994xssKRsyg";constTG_CHAT_ID=
+"8072402346";
 
-    const demoWinners = [
-        { name: "Rahul Sharma", prize: 500, mob: "919812XXXX", code: "DKJ-4821" },
-        { name: "Sumit Kumar", prize: 200, mob: "919723XXXX", code: "DKJ-1029" },
-        { name: "Ankit Verma", prize: 1000, mob: "918834XXXX", code: "DKJ-9921" },
-        { name: "Priya Singh", prize: 1500, mob: "919102XXXX", code: "DKJ-5041" }
-    ];
+constytVideos=[
+{id:"v1",title:"🎬Video1:
+SecretCodeChallenge1",ytUrl:
+"https://www.youtube.com/watch
+?v=dQw4w9WgXcQ",reward:5,secretCode:"DKJ101"},
+{id:"v2",title:"🔥Video2:
+MegaJackpotWinningTricks",ytUrl:"https://www.youtube.com
+/watch?v=3JZ_D3ELwOQ",reward:10,secretCode:"DKJ202"},
+{id:"v3",title:"🧠Video3:
+DailyQuizBonusVideo",ytUrl:
+"https://www.youtube.com/watch
+?v=L_LUpnjgPso",reward:5,secretCode:"DKJ303"},
+{id:"v4",title:"💰Video4:
+Special₹15RewardVideo",ytUrl:"https://www.youtube.com/watch
+?v=fJ9rUzIMcZQ",reward:15,secretCode:"DKJ404"},
+{id:"v5",title:"🎁Video5:
+SecretGiveawayCode",ytUrl:
+"https://www.youtube.com/watch
+?v=kJQP7kiw5Fk",reward:10,secretCode:"DKJ505"}
+];
 
-    function closePopup() { 
-        document.getElementById('popup').style.display = 'none'; 
-    }
+const demoWinners = [
+{name:"RahulSharma",prize:500,mob:"919812XXXX",code:"DKJ-4821"},
+{name:"SumitKumar",prize:200,mob:"919723XXXX",code:"DKJ-1029"},
+{name:"AnkitVerma",prize:1000,mob:"918834XXXX",code:"DKJ-9921"},
+{name:"PriyaSingh",prize:1500,mob:"919102XXXX",code:"DKJ-5041"}
+];
 
-    function openVideoModal() {
-        if(!currentUser) return alert("Pehle Login ya Register karein!");
-        
-        let h = "<h2>📺 WATCH & EARN VIDEOS</h2><p style='font-size:12px; color:#aaa;'>Pehle 'PLAY ON YOUTUBE' par click karke video dekhein, phir Secret Code daal kar claim karein:</p>";
-        ytVideos.forEach(v => {
-            h += `
-                <div style="background:#1a1a1a; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #333; text-align:left;">
-                    <div style="font-weight:bold; font-size:14px; color:#f39c12; margin-bottom:8px;">${v.title}</div>
-                    <div style="display:flex; justify-height:space-between; align-items:center; margin-bottom:10px;">
-                        <span style="color:#27ae60; font-weight:bold; font-size:13px;">REWARD: +₹${v.reward}</span>
-                    </div>
-                    <a href="${v.ytUrl}" target="_blank" class="btn-yt">▶️ PLAY ON YOUTUBE</a>
-                    <div style="display:flex; gap:6px; margin-top:6px;">
-                        <input id="modal_input_${v.id}" placeholder="Enter Secret Code" style="margin:0; padding:10px; font-size:13px; background:#fff;">
-                        <button class="btn btn-gold" onclick="submitVideoCode('${v.id}')" style="margin:0; width:auto; padding:0 15px; font-size:12px;">CLAIM ₹${v.reward}</button>
-                    </div>
-                </div>`;
-        });
-        document.getElementById('pContent').innerHTML = h;
-        document.getElementById('popup').style.display = 'block';
-    }
+functionclosePopup(){document.getElement
+ById('popup').style.display='none';
+}
 
-    function submitVideoCode(vId) {
-        if(!currentUser) return alert("Pehle Login karein!");
-        const v = ytVideos.find(x => x.id === vId);
-        const inputElem = document.getElementById('modal_input_' + vId);
-        const inputCode = inputElem ? inputElem.value.trim() : "";
-        
-        if(!inputCode) return alert("Secret Code enter karein!");
-        if(inputCode.toUpperCase() !== v.secretCode.toUpperCase()) { return alert("Galat Secret Code!"); }
+functionopenVideoModal(){if(!currentUser)return
+alert("PehleLoginyaRegisterkarein!");
+leth="<h2>📺WATCH&EARNVIDEOS</
+h2><pstyle='font-size:12px;color:#aaa;'>Pehle'PLAYONYOUTUBE'parclickkarkevideodekhein,phirSecretCodedaalkarclaimkarein:</p>";
+ytVideos.forEach(v=>{h+=`
+<divstyle="background:#1a1a1a;padding:12px;border-radius:12px;margin-bottom:15px;border:1pxsolid#333;text-align:left;">
+<divstyle="font-weight:bold;
+font-size:14px;color:#f39c12;margin-bottom:8px;">${v.title}</div>
+<divstyle="display:flex;justify-height:space-between;align-items:center;
+margin-bottom:10px;">
+<spanstyle="color:#27ae60;font-weight:bold;
+font-size:13px;">REWARD:+₹$
+{v.reward}</span>
+</div>
+<ahref="${v.ytUrl}"target="_blank"class="btn-yt">▶PLAYONYOUTUBE</a>
+<divstyle="display:flex;gap:6px;margin-top:6px;">
+<inputid="modal_input_${v.id}"placeholder="EnterSecretCode"style="margin:0;padding:10px;font-size:13px;background:#fff;">
+<buttonclass="btn btn-gold"onclick="submitVideoCode('$
+{v.id}')"style="margin:0;width:auto;padding:015px;font-size:12px;">CLAIM₹$
+{v.reward}</button>
+</div>
+</div>;`
+});
+document.getElementById('pContent').innerHTML=h;
+document.getElementById('popup').style.display='block';
+}
 
-        if(database) {
-            database.ref('users/' + currentUser.mob).once('value', snapshot => {
-                let userVal = snapshot.val() || {};
-                let claimed = userVal.claimedVideos || {};
-                if(claimed[vId]) return alert("Aap is video ka reward pehle hi le chuke hain!");
+functionsubmitVideoCode(vId){if(!currentUser)return
+alert("PehleLoginkarein!");constv=ytVideos.find(x=>
+x.id===vId);
+constinputElem=document.getElementById('modal_input_'+vId);
+constinputCode=inputElem?inputElem.value.trim():"";
 
-                let oldBal = userVal.bal || 0;
-                let newBal = oldBal + v.reward;
-                
-                database.ref('users/' + currentUser.mob).update({
-                    bal: newBal,
-                    [claimedVideos/${vId}]: true
-                }).then(() => {
-                    currentUser.bal = newBal;
-                    localStorage.setItem('dkj_user_login', JSON.stringify(currentUser));
-                    updateUI();
-                    alert(🎉 Badhai ho! ₹${v.reward} Aapke Wallet mein add ho gaye! Total Balance: ₹${newBal});
-                    closePopup();
-                });
-            });
-        }
-    }
+if(!inputCode)returnalert("SecretCodeenterkarein!");
+if(inputCode.toUpperCase()!
+==v.secretCode.toUpperCase())
+{returnalert("GalatSecretCode!");}
 
-    function showWithdrawForm() {
-        if(!currentUser) return alert("Pehle Login Karein!");
-        let currentBal = currentUser.bal || 0;
-        if(currentBal < 200) return alert("Minimum withdrawal limit ₹200 hai! Aapka Balance ₹" + currentBal + " hai.");
-        
-        document.getElementById('pContent').innerHTML = `
-            <h2>WITHDRAW MONEY</h2>
-            <p style="color:#27ae60; font-weight:bold; font-size:16px;">Available Balance: ₹${currentBal}</p>
-            <input id="wAmt" type="number" placeholder="Enter Amount (Min ₹200)" value="${currentBal}">
-            <input id="wName" placeholder="Account Holder Name">
-            <input id="wBank" placeholder="Bank Name / UPI App">
-            <input id="wAcc" placeholder="Account No. / UPI ID">
-            <input id="wIFSC" placeholder="IFSC Code (Bank ke liye)">
-            <button class="btn btn-gold" onclick="doWithdraw()">SUBMIT WITHDRAWAL REQUEST</button>`;
-        document.getElementById('popup').style.display = 'block';
-    }
+if(database){database.ref('users/'+
+currentUser.mob).once('value',snapshot=>{
+letuserVal=snapshot.val()||{};
+letclaimed=userVal.claimedVideos||{};
+if(claimed[vId])returnalert("Aapisvideokarewardpehlehilechukehain!");
 
-    function doWithdraw() {
-        let reqAmt = parseInt(document.getElementById('wAmt').value);
-        let name = document.getElementById('wName').value.trim();
-        let bank = document.getElementById('wBank').value.trim();
-        let acc = document.getElementById('wAcc').value.trim();
-        let ifsc = document.getElementById('wIFSC').value.trim() || 'N/A';
+let oldBal =userVal.bal ||
+0;
+letnewBal=oldBal+
+v.reward;
 
-        if(!reqAmt || reqAmt < 200) return alert("Minimum Withdrawal ₹200 hona chahiye!");
-        if(reqAmt > (currentUser.bal || 0)) return alert("Aapka Wallet Balance kam hai!");
-        if(!name || !bank || !acc) return alert("Kripya saari bank/UPI details bharein!");
+database.ref('users/'+currentUser.mob).update({
+bal:newBal,[c`laimedVideos/${vId}]`:
+ 
+true
 
-        let newBal = currentUser.bal - reqAmt;
 
-        if(database) {
-            database.ref('users/' + currentUser.mob).update({ bal: newBal }).then(() => {
-                currentUser.bal = newBal;
-                localStorage.setItem('dkj_user_login', JSON.stringify(currentUser));
-                updateUI();
+newBal;
+ 
 
-                // Send Telegram Notification to Admin
-                sendTelegramWithdrawNotification(currentUser.name, currentUser.mob, reqAmt, name, bank, acc, ifsc);
+}).then(()=>{currentUser.bal=
 
-                alert("✅ Withdrawal Request Success! Admin ko aapki request bhej di gayi hai. 24 ghante mein payment mil jayegi.");
-                closePopup();
-            });
-        }
-    }
+localStorage.
+ 
+setItem('dkj_user_login',JSON.stringify(currentUser));
+updateUI();
+alert(`🎉 Badhaiho!₹$
+{v.reward}AapkeWalletmeinaddhogaye!TotalBalance:₹${newBal}
+)`;
+ 
 
-    function sendTelegramWithdrawNotification(uName, uMob, amt, accName, bankName, accNo, ifsc) {
-        let text = 🚨 *NEW WITHDRAWAL REQUEST* 🚨\n\n +
-                   👤 *User Name:* ${uName}\n +
-                   📱 *User Mobile:* ${uMob}\n +
-                   💰 *Withdraw Amount:* ₹${amt}\n\n +
-                   🏦 *Account Holder:* ${accName}\n +
-                   🏛️ *Bank/UPI:* ${bankName}\n +
-                   🔢 *Acc/UPI ID:* ${accNo}\n +
-                   📌 *IFSC Code:* ${ifsc};
 
-        let url = https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown;
+});
+}
+}
+ 
 
-        fetch(url).catch(err => console.error("Telegram API Error:", err));
-    }
+});
+ 
+closePopup();
+ 
 
-    function showReg() {
-        document.getElementById('pContent').innerHTML = <h2>REGISTER NEW ACCOUNT</h2><input id="rn" placeholder="Full Name"><input id="rm" type="number" placeholder="Mobile Number"><input id="rp" type="password" placeholder="Set Password"><button class="btn btn-gold" onclick="doReg()">CREATE ACCOUNT NOW</button>;
-        document.getElementById('popup').style.display = 'block';
-    }
+functionshowWithdrawForm(){if(!currentUser)return
+alert("PehleLoginKarein!");letcurrentBal=
+currentUser.bal||0;if(currentBal<200)return
+alert("Minimumwithdrawallimit
+₹200hai!AapkaBalance₹"+currentBal+"hai.");
 
-    function doReg() {
-        let n=document.getElementById('rn').value.trim(), m=document.getElementById('rm').value.trim(), p=document.getElementById('rp').value.trim();
-        if(!n||!m||!p) return alert("Saari Details Bharein!");
-        if(database) {
-            database.ref('users/'+m).set({ name: n, mob: m, pass: p, bal: 0, isWinner: false }).then(() => {
-                currentUser = { name: n, mob: m, bal: 0 };
-                localStorage.setItem('dkj_user_login', JSON.stringify(currentUser));
-                updateUI();
-                alert("Account Created!"); closePopup();
-            });
-        }
-    }
+document.getElementById('pContent').innerHTML=
+`
+<h2>WITHDRAWMONEY</
+h2>
+<pstyle="color:#27ae60;
+font-weight:bold;
+font-size:16px;">AvailableBalance:
+₹${currentBal}</p>
+<input id="wAmt"type="number" placeholder="EnterAmount(Min₹200)"value="$
+{currentBal}">
+<inputid="wName"placeholder="AccountHolderName">
+<inputid="wBank"placeholder="BankName/UPIApp">
+<inputid="wAcc"placeholder="AccountNo./UPIID">
+<inputid="wIFSC"placeholder="IFSCCode(Bankkeliye)">
+<buttonclass="btnbtn-gold"
+onclick="doWithdraw()">SUBMITWITHDRAWALREQUEST</button>;`
+document.getElementById('popup').style.display='block';
+}
 
-    function showLogin() {
-        document.getElementById('pContent').innerHTML = <h2>LOGIN ACCOUNT</h2><input id="lm" type="number" placeholder="Mobile Number"><input id="lp" type="password" placeholder="Password"><button class="btn btn-gold" onclick="doLogin()">LOGIN NOW</button>;
-        document.getElementById('popup').style.display = 'block';
-    }
+functiondoWithdraw(){
+letreqAmt=parseInt(document.getElementById('wAmt').value);letname=document.getElem
+entById('wName').value.trim();
+letbank=document.getElementById('wBank').value.trim();
+letacc=document.getElementById('wAcc').value.trim();
+letifsc=document.getElementById('wIFSC').value.trim()||'N/A';
 
-    function doLogin() {
-        let m=document.getElementById('lm').value.trim(), p=document.getElementById('lp').value.trim();
-        if(database) {
-            database.ref('users/'+m).once('value', s => {
-                let u = s.val();
-                if(u && u.pass == p) { 
-                    currentUser = u;
-                    localStorage.setItem('dkj_user_login', JSON.stringify(u)); 
-                    updateUI();
-                    alert("Login Successful!"); closePopup();
-                } else { alert("Wrong Mobile Number or Password!"); }
-            });
-        }
-    }
+if(!reqAmt||reqAmt<200)returnalert("MinimumWithdrawal
+₹200hona chahiye!");
+if(reqAmt>(currentUser.bal
+||0))returnalert("AapkaWalletBalancekamhai!");
+if(!name||!bank||!acc)returnalert("Kripyasaaribank/UPIdetailsbharein!");
 
-    function showProfile() {
-        if(!currentUser) return alert("Login First!");
-        document.getElementById('pContent').innerHTML = <h2>MY PROFILE</h2><p><b>Name:</b> ${currentUser.name}</p><p><b>Mobile:</b> ${currentUser.mob}</p><p><b>Balance:</b> ₹${currentUser.bal||0}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>;
-        document.getElementById('popup').style.display = 'block';
-    }
+letnewBal=currentUser.bal-reqAmt;
 
-    function logout() { localStorage.clear(); location.reload(); }
+if(database){database.ref('users/'+
+currentUser.mob).update({bal:newBal}).then(()=>{
+currentUser.bal=newBal;localStorage.s
+etItem('dkj_user_login',JSON.stringify(currentUser));
+updateUI();
 
-    function showWinners() {
-        let h = "<h2>🏆 TOP WINNERS (MIN ₹200)</h2>";
-        demoWinners.forEach(w => {
-            h += <div class="list-item"><span class="win-amt">₹${w.prize}</span><b>${w.name}</b><br><small>Mob: ${w.mob} | Ticket: ${w.code}</small></div>;
-        });
-        document.getElementById('pContent').innerHTML = h;
-        document.getElementById('popup').style.display = 'block';
-    }
+//SendTelegramNotificationtoAdmin
+sendTelegramWithdrawNotification(currentUser.name,currentUser.mob,reqAmt,name,bank,acc,ifsc);
+alert("✅WithdrawalRequestSuccess!Adminkoaapkirequestbhejdigayihai.24ghantemeinpaymentmiljayegi.");
+closePopup();
+});
+}
+}
 
-    function showTC() {
-        document.getElementById('pContent').innerHTML = <h2>TERMS & CONDITIONS</h2><p style="text-align:left; font-size:13px;">1. Free account creation.<br>2. Minimum withdrawal ₹200.<br>3. Fast payout in 24 hours.</p>;
-        document.getElementById('popup').style.display = 'block';
-    }
+functionsendTelegramWithdrawNotification(uName,uMob,amt,accName,bankName,accNo,ifsc){
+lettext=`🚨 *NEW
+WITHDRAWALREQUEST*🚨\n\n`+
+`👤*UserName:*$
+{uName}\n`+
+`📱*UserMobile:*$
+{uMob}\n`+
+`💰*WithdrawAmount:*
+₹${amt}\n\n`+
+`🏦 *AccountHolder:*$
+{accName}\n`+
+`🏛*Bank/UPI:*$
+{bankName}\n`+
+`🔢*Acc/UPIID:*$
+{accNo}\n`+
+`📌*IFSCCode:*${ifsc};`
 
-    function copyInvite() {
-        navigator.clipboard.writeText(window.location.href);
-        alert("Invite Link Copied!");
-    }
+leturl=`https://api
+.telegram.org/bot${TG_BOT
+_TOKEN}/sendMessage?chat
+_id=${TG_CHAT_ID}&text=
+${encodeURIComponent(text)}&parse_mode=Markdown;`
 
-    function joinDraw(amt) {
-        if(!currentUser) return alert("Pehle Login Karein!");
-        alert("Payment Gateway Feature coming soon!");
-    }
+fetch(url).catch(err=>console.error("TelegramAPIError:",err));
+}
 
-    function adminMode() {
-        let pw = prompt("Admin Password:"); if(pw !== "7860") return;
-        alert("Welcome Admin!");
-    }
+functionshowReg(){document.getElement
+ById('pContent').innerHTML
+=<`h2>REGISTERNEW
+ACCOUNT</h2><inputid="rn"placeholder="FullName"><inputid="rm"type="number"placeholder="MobileNumber"><inputid="rp"type="password"placeholder="SetPassword"><button
+class="btnbtn-gold"onclick="doReg()">CREATEACCOUNTNOW</button>;`
+document.getElementById('popup').style.display='block';
+}
 
-    function updateUI() {
-        if(currentUser) {
-            const uHi = document.getElementById('uHi');
-            const vBal = document.getElementById('vBal');
-            if(uHi) uHi.innerText = "Hi, " + currentUser.name;
-            if(vBal) vBal.innerText = "₹" + (currentUser.bal || 0);
-        }
-    }
+functiondoReg(){
+letn=document.getElementById('rn').value.trim(),m=document.getElementById('rm').value.trim(),p=document.getElementById('rp').value.trim();
+if(!n||!m||!p)returnalert("SaariDetailsBharein!");
+if(database){database.ref('users/'+m).se
+t({name:n,mob:m,pass:p,bal:0,isWinner:false}).then(()=>{
+currentUser={name:n,mob:m,bal:0};
+localStorage.setItem('dkj_user_login',JSON.stringify(currentUser));
+updateUI();alert("AccountCreated!");
+closePopup();
+});
+}
+}
 
-    window.onload = function() {
-        updateUI();
-    };
+functionshowLogin(){document.getElement
+ById('pContent').innerHTML
+=<`h2>LOGINACCOUNT</
+h2><inputid="lm"type="number"placeholder="MobileNumber"><inputid="lp"type="password"placeholder="Password"><buttonclass="btnbtn-gold"onclick="doLogin()">LOGINNOW</button>;`
+document.getElementById('popup').style.display='block';
+}
+
+functiondoLogin(){
+letm=document.getElementById('lm').value.trim(),p=document.getElementById('lp').value.trim();
+if(database){database.ref('user
+s/'+m).once('value',s=>
+{
+letu=s.val();
+if(u&&u.pass==p){currentUser=u;localStorage.
+setItem('dkj_user_login',JSON.stringify(u));
+updateUI();alert("Login
+Successful!");closePopup();
+}else{alert("WrongMobileNumberorPassword!");}
+});
+}
+}
+
+functionshowProfile(){if(!currentUser)return
+alert("LoginFirst!");document.getElementById('
+pContent').innerHTML=<`h2>MYPROFILE</h2><p><b>Name:</b>${currentUser.name}
+</p><p><b>Mobile:</
+b>${currentUser.mob}</p><p><b>Balance:</b>₹
+${currentUser.bal||0}</p><buttonclass="btnbtn-dark"onclick="logout()">LOGOUT</button>;`
+document.getElementById('popup').style.display='block';
+}
+
+functionlogout()
+{localStorage.clear();location.reload();}
+
+functionshowWinners(){
+leth="<h2>🏆TOPWINNERS
+(MIN₹200)</h2>";
+demoWinners.forEach(w=>{h+=<`div
+class="list-item"><spanclass="win-amt">₹${w.prize}
+</span><b>${w.name}</b><br><small>Mob:${w.mob}|Ticket:${w.code}</small></div>;`
+});
+document.getElementById('pContent').innerHTML=h;
+document.getElementById('popup').style.display='block';
+}
+
+functionshowTC(){document.getElementB
+yId('pContent').innerHTML=
+<`h2>TERMS&CONDITIONS</
+h2><pstyle="text-align:left;font-size:13px;">1.Freeaccountcreation.<br>2.Minimumwithdrawal₹200.<br>3.Fastpayoutin24hours.</p>;`
+document.getElementById('popup').style.display='block';
+}
+
+functioncopyInvite(){navigator.clipboard.writeText(
+window.location.href);alert("InviteLinkCopied!");
+}
+
+functionjoinDraw(amt){if(!currentUser)return
+alert("PehleLoginKarein!");alert("PaymentGateway
+Featurecomingsoon!");
+}
+
+functionadminMode(){letpw=prompt("Admin
+Password:");if(pw!=="7860")return;
+alert("WelcomeAdmin!");
+}
+
+functionupdateUI(){if(currentUser){constuHi=
+document.getElementById('uHi');constvBal=
+document.getElementById('vBal');if(uHi)uHi.innerText="Hi,"
++currentUser.name;
+if(vBal)vBal.innerText="₹"
++(currentUser.bal||0);
+}
+}
+
+window.onload=function(){updateUI();
+};
 </script>
 </body>
 </html>
