@@ -58,7 +58,7 @@
     <div class="vip-badge">HOT DEAL 🔥</div>
     <div class="vip-title">📺 WATCH VIDEO & EARN MONEY 💰</div>
     <div class="vip-sub">Video dekho, Secret Code dhundho aur turant Wallet balance mein Cash pao!</div>
-    <button class="btn btn-gold btn-large" onclick="openVideoModal()">▶️ WATCH VIDEOS NOW (EARN ₹5 - ₹15)</button>
+    <button class="btn btn-gold btn-large" onclick="openVideoModal()">▶ WATCH VIDEOS NOW (EARN ₹5 - ₹15)</button>
 </div>
 
 <div class="card">
@@ -148,7 +148,7 @@
                     <div style="display:flex; justify-height:space-between; align-items:center; margin-bottom:10px;">
                         <span style="color:#27ae60; font-weight:bold; font-size:13px;">REWARD: +₹${v.reward}</span>
                     </div>
-                    <a href="${v.ytUrl}" target="_blank" class="btn-yt">▶️ PLAY ON YOUTUBE</a>
+                    <a href="${v.ytUrl}" target="_blank" class="btn-yt">▶ PLAY ON YOUTUBE</a>
                     <div style="display:flex; gap:6px; margin-top:6px;">
                         <input id="modal_input_${v.id}" placeholder="Enter Secret Code" style="margin:0; padding:10px; font-size:13px; background:#fff;">
                         <button class="btn btn-gold" onclick="submitVideoCode('${v.id}')" style="margin:0; width:auto; padding:0 15px; font-size:12px;">CLAIM ₹${v.reward}</button>
@@ -179,12 +179,12 @@
                 
                 database.ref('users/' + currentUser.mob).update({
                     bal: newBal,
-                    [claimedVideos/${vId}]: true
+                    [`claimedVideos/${vId}`]: true
                 }).then(() => {
                     currentUser.bal = newBal;
                     localStorage.setItem('dkj_user_login', JSON.stringify(currentUser));
                     updateUI();
-                    alert(🎉 Badhai ho! ₹${v.reward} Aapke Wallet mein add ho gaye! Total Balance: ₹${newBal});
+                    alert(`🎉 Badhai ho! ₹${v.reward} Aapke Wallet mein add ho gaye! Total Balance: ₹${newBal}`);
                     closePopup();
                 });
             });
@@ -237,22 +237,22 @@
     }
 
     function sendTelegramWithdrawNotification(uName, uMob, amt, accName, bankName, accNo, ifsc) {
-        let text = 🚨 *NEW WITHDRAWAL REQUEST* 🚨\n\n +
-                   👤 *User Name:* ${uName}\n +
-                   📱 *User Mobile:* ${uMob}\n +
-                   💰 *Withdraw Amount:* ₹${amt}\n\n +
-                   🏦 *Account Holder:* ${accName}\n +
-                   🏛️ *Bank/UPI:* ${bankName}\n +
-                   🔢 *Acc/UPI ID:* ${accNo}\n +
-                   📌 *IFSC Code:* ${ifsc};
+        let text = `🚨 *NEW WITHDRAWAL REQUEST* 🚨\n\n` +
+                   `👤 *User Name:* ${uName}\n` +
+                   `📱 *User Mobile:* ${uMob}\n` +
+                   `💰 *Withdraw Amount:* ₹${amt}\n\n` +
+                   `🏦 *Account Holder:* ${accName}\n` +
+                   `🏛 *Bank/UPI:* ${bankName}\n` +
+                   `🔢 *Acc/UPI ID:* ${accNo}\n` +
+                   `📌 *IFSC Code:* ${ifsc}`;
 
-        let url = https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown;
+        let url = `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
 
         fetch(url).catch(err => console.error("Telegram API Error:", err));
     }
 
     function showReg() {
-        document.getElementById('pContent').innerHTML = <h2>REGISTER NEW ACCOUNT</h2><input id="rn" placeholder="Full Name"><input id="rm" type="number" placeholder="Mobile Number"><input id="rp" type="password" placeholder="Set Password"><button class="btn btn-gold" onclick="doReg()">CREATE ACCOUNT NOW</button>;
+        document.getElementById('pContent').innerHTML = `<h2>REGISTER NEW ACCOUNT</h2><input id="rn" placeholder="Full Name"><input id="rm" type="number" placeholder="Mobile Number"><input id="rp" type="password" placeholder="Set Password"><button class="btn btn-gold" onclick="doReg()">CREATE ACCOUNT NOW</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
@@ -270,7 +270,7 @@
     }
 
     function showLogin() {
-        document.getElementById('pContent').innerHTML = <h2>LOGIN ACCOUNT</h2><input id="lm" type="number" placeholder="Mobile Number"><input id="lp" type="password" placeholder="Password"><button class="btn btn-gold" onclick="doLogin()">LOGIN NOW</button>;
+        document.getElementById('pContent').innerHTML = `<h2>LOGIN ACCOUNT</h2><input id="lm" type="number" placeholder="Mobile Number"><input id="lp" type="password" placeholder="Password"><button class="btn btn-gold" onclick="doLogin()">LOGIN NOW</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
@@ -291,7 +291,7 @@
 
     function showProfile() {
         if(!currentUser) return alert("Login First!");
-        document.getElementById('pContent').innerHTML = <h2>MY PROFILE</h2><p><b>Name:</b> ${currentUser.name}</p><p><b>Mobile:</b> ${currentUser.mob}</p><p><b>Balance:</b> ₹${currentUser.bal||0}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>;
+        document.getElementById('pContent').innerHTML = `<h2>MY PROFILE</h2><p><b>Name:</b> ${currentUser.name}</p><p><b>Mobile:</b> ${currentUser.mob}</p><p><b>Balance:</b> ₹${currentUser.bal||0}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>`;
         document.getElementById('popup').style.display = 'block';
     }
 
@@ -300,14 +300,14 @@
     function showWinners() {
         let h = "<h2>🏆 TOP WINNERS (MIN ₹200)</h2>";
         demoWinners.forEach(w => {
-            h += <div class="list-item"><span class="win-amt">₹${w.prize}</span><b>${w.name}</b><br><small>Mob: ${w.mob} | Ticket: ${w.code}</small></div>;
+            h += `<div class="list-item"><span class="win-amt">₹${w.prize}</span><b>${w.name}</b><br><small>Mob: ${w.mob} | Ticket: ${w.code}</small></div>`;
         });
         document.getElementById('pContent').innerHTML = h;
         document.getElementById('popup').style.display = 'block';
     }
 
     function showTC() {
-        document.getElementById('pContent').innerHTML = <h2>TERMS & CONDITIONS</h2><p style="text-align:left; font-size:13px;">1. Free account creation.<br>2. Minimum withdrawal ₹200.<br>3. Fast payout in 24 hours.</p>;
+        document.getElementById('pContent').innerHTML = `<h2>TERMS & CONDITIONS</h2><p style="text-align:left; font-size:13px;">1. Free account creation.<br>2. Minimum withdrawal ₹200.<br>3. Fast payout in 24 hours.</p>`;
         document.getElementById('popup').style.display = 'block';
     }
 
