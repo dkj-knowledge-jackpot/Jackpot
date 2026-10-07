@@ -114,17 +114,16 @@
 
     const database = (typeof firebase !== 'undefined' && firebase.database) ? firebase.database() : null;
     
-    // Telegram Bot Details
     const TG_BOT_TOKEN = "8357735991:AAHUnhnXj0MaNi-Z1XtitwMy994xssKRsyg";
     const TG_CHAT_ID = "8072402346";
 
-    // 🎬 AAPKI VIDEOS KI LIST (YAHAN APNI YOUTUBE URL AUR CODE BADLEIN)
+    // 🎬 VIDEOS LIST (ytId me bas video ID daalein, jaise 'dQw4w9WgXcQ')
     const ytVideos = [
-        { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", reward: 5, secretCode: "DKJ101" },
-        { id: "v2", title: "🔥 Video 2: Mega Jackpot Winning Tricks", ytUrl: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ", reward: 10, secretCode: "DKJ202" },
-        { id: "v3", title: "🧠 Video 3: Daily Quiz Bonus Video", ytUrl: "https://www.youtube.com/watch?v=L_LUpnjgPso", reward: 5, secretCode: "DKJ303" },
-        { id: "v4", title: "💰 Video 4: Special ₹15 Reward Video", ytUrl: "https://www.youtube.com/watch?v=fJ9rUzIMcZQ", reward: 15, secretCode: "DKJ404" },
-        { id: "v5", title: "🎁 Video 5: Secret Giveaway Code", ytUrl: "https://www.youtube.com/watch?v=kJQP7kiw5Fk", reward: 10, secretCode: "DKJ505" }
+        { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytId: "https://youtu.be/d7evoZve4Wk?si=0uajHfwxCGonJOBP", reward: 5, secretCode: "DKJ101" },
+        { id: "v2", title: "🔥 Video 2: Mega Jackpot Winning Tricks", ytId: "3JZ_D3ELwOQ", reward: 10, secretCode: "DKJ202" },
+        { id: "v3", title: "🧠 Video 3: Daily Quiz Bonus Video", ytId: "L_LUpnjgPso", reward: 5, secretCode: "DKJ303" },
+        { id: "v4", title: "💰 Video 4: Special ₹15 Reward Video", ytId: "fJ9rUzIMcZQ", reward: 15, secretCode: "DKJ404" },
+        { id: "v5", title: "🎁 Video 5: Secret Giveaway Code", ytId: "kJQP7kiw5Fk", reward: 10, secretCode: "DKJ505" }
     ];
 
     const demoWinners = [
@@ -138,10 +137,24 @@
         document.getElementById('popup').style.display = 'none'; 
     }
 
-    // Direct YouTube Opening Fix
-    function openYouTubeApp(url) {
-        if (!url) return alert("Video Link Sahi Nahi Hai!");
-        window.open(url, '_system') || window.open(url, '_blank') || (window.location.href = url);
+    // 🚨 PERFECT DIRECT YOUTUBE APP OPENING (NO 500 ERROR)
+    function openYouTubeApp(vId) {
+        if (!vId) return alert("Video ID galat hai!");
+        
+        // Deep-link protocol to force open official YouTube App
+        let appUrl = "vnd.youtube:" + vId;
+        let webUrl = "https://www.youtube.com/watch?v=" + vId;
+
+        // Try opening native app first, fallback to web browser if app not found
+        let iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
+        
+        window.location.href = appUrl;
+
+        setTimeout(function() {
+            window.location.href = webUrl;
+        }, 1000);
     }
 
     function openVideoModal() {
@@ -155,7 +168,7 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <span style="color:#27ae60; font-weight:bold; font-size:13px;">REWARD: +₹${v.reward}</span>
                     </div>
-                    <button class="btn-yt" onclick="openYouTubeApp('${v.ytUrl}')">▶ PLAY ON YOUTUBE</button>
+                    <button class="btn-yt" onclick="openYouTubeApp('${v.ytId}')">▶ PLAY ON YOUTUBE</button>
                     <div style="display:flex; gap:6px; margin-top:6px;">
                         <input id="modal_input_${v.id}" placeholder="Enter Secret Code" style="margin:0; padding:10px; font-size:13px; background:#fff;">
                         <button class="btn btn-gold" onclick="submitVideoCode('${v.id}')" style="margin:0; width:auto; padding:0 15px; font-size:12px;">CLAIM ₹${v.reward}</button>
