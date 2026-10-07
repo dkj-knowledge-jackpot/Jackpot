@@ -34,7 +34,7 @@
         .btn-gold { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3); }
         .btn-tg { background: var(--tg-blue); color: white; }
         .btn-large { padding: 16px; font-size: 16px; border-radius: 12px; }
-        .btn-yt { background: #ff0000; color: white; font-weight: bold; padding: 10px 15px; border-radius: 8px; text-decoration: none; display: inline-block; margin-bottom: 8px; border: none; cursor: pointer; }
+        .btn-yt { background: #ff0000; color: white; font-weight: bold; padding: 10px 15px; border-radius: 8px; text-decoration: none; display: inline-block; margin-bottom: 8px; border: none; text-align: center; font-size: 13px; }
         
         .scroll-box { display: flex; overflow-x: auto; padding: 10px; gap: 12px; }
         .draw-box { min-width: 150px; background: white; padding: 15px; border-radius: 14px; border: 2px solid var(--dark); text-align: center; color: #000; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
@@ -117,7 +117,7 @@
     const TG_BOT_TOKEN = "8357735991:AAHUnhnXj0MaNi-Z1XtitwMy994xssKRsyg";
     const TG_CHAT_ID = "8072402346";
 
-    // 🎬 VIDEOS LIST (ytId me bas video ID daalein, jaise 'dQw4w9WgXcQ')
+    // 🎬 YAHAN APNI YOUTUBE VIDEO ID AUR SECRET CODE CHANGE KAREIN
     const ytVideos = [
         { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytId: "https://youtu.be/d7evoZve4Wk?si=0uajHfwxCGonJOBP", reward: 5, secretCode: "DKJ101" },
         { id: "v2", title: "🔥 Video 2: Mega Jackpot Winning Tricks", ytId: "3JZ_D3ELwOQ", reward: 10, secretCode: "DKJ202" },
@@ -137,38 +137,20 @@
         document.getElementById('popup').style.display = 'none'; 
     }
 
-    // 🚨 PERFECT DIRECT YOUTUBE APP OPENING (NO 500 ERROR)
-    function openYouTubeApp(vId) {
-        if (!vId) return alert("Video ID galat hai!");
-        
-        // Deep-link protocol to force open official YouTube App
-        let appUrl = "vnd.youtube:" + vId;
-        let webUrl = "https://www.youtube.com/watch?v=" + vId;
-
-        // Try opening native app first, fallback to web browser if app not found
-        let iframe = document.createElement("iframe");
-        iframe.style.display = "none";
-        document.body.appendChild(iframe);
-        
-        window.location.href = appUrl;
-
-        setTimeout(function() {
-            window.location.href = webUrl;
-        }, 1000);
-    }
-
     function openVideoModal() {
         if(!currentUser) return alert("Pehle Login ya Register karein!");
         
         let h = "<h2>📺 WATCH & EARN VIDEOS</h2><p style='font-size:12px; color:#aaa;'>Pehle 'PLAY ON YOUTUBE' par click karke video dekhein, phir Secret Code daal kar claim karein:</p>";
         ytVideos.forEach(v => {
+            let ytUrl = "https://m.youtube.com/watch?v=" + v.ytId;
             h += `
                 <div style="background:#1a1a1a; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #333; text-align:left;">
                     <div style="font-weight:bold; font-size:14px; color:#f39c12; margin-bottom:8px;">${v.title}</div>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <span style="color:#27ae60; font-weight:bold; font-size:13px;">REWARD: +₹${v.reward}</span>
                     </div>
-                    <button class="btn-yt" onclick="openYouTubeApp('${v.ytId}')">▶ PLAY ON YOUTUBE</button>
+                    <!-- Direct HTML Anchor Tag to avoid WebView Javascript 500 Error -->
+                    <a href="${ytUrl}" target="_blank" class="btn-yt">▶ PLAY ON YOUTUBE</a>
                     <div style="display:flex; gap:6px; margin-top:6px;">
                         <input id="modal_input_${v.id}" placeholder="Enter Secret Code" style="margin:0; padding:10px; font-size:13px; background:#fff;">
                         <button class="btn btn-gold" onclick="submitVideoCode('${v.id}')" style="margin:0; width:auto; padding:0 15px; font-size:12px;">CLAIM ₹${v.reward}</button>
