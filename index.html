@@ -42,6 +42,9 @@
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-weight: bold; color: #000; outline: none; }
         .list-item { background: #222; padding: 12px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); }
         .win-amt { float: right; color: var(--green); font-weight: bold; font-size: 16px; }
+        
+        .badge-pending { background: #f39c12; color: #000; padding: 3px 8px; border-radius: 5px; font-weight: bold; font-size: 11px; }
+        .badge-success { background: #27ae60; color: #fff; padding: 3px 8px; border-radius: 5px; font-weight: bold; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -81,7 +84,7 @@
 <div style="padding: 10px;">
     <button class="btn btn-gold" onclick="showReg()">➕ CREATE ACCOUNT</button>
     <button class="btn btn-dark" onclick="showLogin()">🔑 LOGIN ACCOUNT</button>
-    <button class="btn btn-dark" onclick="showProfile()">👤 MY PROFILE & CODES</button>
+    <button class="btn btn-dark" onclick="showProfile()">👤 MY PROFILE & WITHDRAW HISTORY</button>
     <button class="btn btn-gold" onclick="showWinners()">🏆 TOP WINNERS (MIN ₹200)</button>
     <button class="btn" style="background:#444; color:white;" onclick="showTC()">📄 TERMS & CONDITIONS</button>
     <a href="https://t.me/dkj_knowledge_jackoprt" target="_blank" class="btn btn-tg">📢 TELEGRAM CHANNEL</a>
@@ -116,9 +119,8 @@
     const TG_BOT_TOKEN = "8357735991:AAHUnhnXj0MaNi-Z1XtitwMy994xssKRsyg";
     const TG_CHAT_ID = "8072402346";
 
-    // 🎬 VIDEOS LIST (Sirf Video ki YouTube ID daalein)
     const ytVideos = [
-        { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytId: "https://youtu.be/d7evoZve4Wk?si=0uajHfwxCGonJOBP", reward: 5, secretCode: "DKJ101" },
+        { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytId: "dQw4w9WgXcQ", reward: 5, secretCode: "DKJ101" },
         { id: "v2", title: "🔥 Video 2: Mega Jackpot Winning Tricks", ytId: "3JZ_D3ELwOQ", reward: 10, secretCode: "DKJ202" },
         { id: "v3", title: "🧠 Video 3: Daily Quiz Bonus Video", ytId: "L_LUpnjgPso", reward: 5, secretCode: "DKJ303" },
         { id: "v4", title: "💰 Video 4: Special ₹15 Reward Video", ytId: "fJ9rUzIMcZQ", reward: 15, secretCode: "DKJ404" },
@@ -134,19 +136,18 @@
 
     function closePopup() { 
         document.getElementById('popup').style.display = 'none'; 
-        document.getElementById('pContent').innerHTML = ''; // Stop video audio on close
+        document.getElementById('pContent').innerHTML = ''; 
     }
 
     function openVideoModal() {
         if(!currentUser) return alert("Pehle Login ya Register karein!");
         
-        let h = "<h2>📺 WATCH & EARN VIDEOS</h2><p style='font-size:12px; color:#aaa;'>Pura Video dekhein, Secret Code dhundhein aur reward paayein:</p>";
+        let h = "<h2>📺 WATCH & EARN VIDEOS</h2><p style='font-size:12px; color:#aaa;'>Video dekhein, Secret Code dhundhein aur reward paayein:</p>";
         ytVideos.forEach(v => {
             h += `
                 <div style="background:#1a1a1a; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #333; text-align:center;">
                     <div style="font-weight:bold; font-size:14px; color:#f39c12; margin-bottom:8px;">${v.title}</div>
                     
-                    <!-- In-App Player (100% Views & Watch Time) -->
                     <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:8px; margin-bottom:10px;">
                         <iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" src="https://www.youtube.com/embed/${v.ytId}?autoplay=0&rel=0" allowfullscreen></iframe>
                     </div>
@@ -224,17 +225,36 @@
         if(!name || !bank || !acc) return alert("Kripya saari bank/UPI details bharein!");
 
         let newBal = currentUser.bal - reqAmt;
+        let withdrawId = 'W_' + Date.now();
+        let withdrawData = {
+            id: withdrawId,
+            userMob: currentUser.mob,
+            userName: currentUser.name,
+            amt: reqAmt,
+            accName: name,
+            bankName: bank,
+            accNo: acc,
+            ifsc: ifsc,
+            status: 'PENDING',
+            date: new Date().toLocaleString()
+        };
 
         if(database) {
-            database.ref('users/' + currentUser.mob).update({ bal: newBal }).then(() => {
+            database.ref('users/' + currentUser.mob).update({ bal: newBal });
+            
+            // Save to user history
+            database.ref('withdrawals/' + currentUser.mob + '/' + withdrawId).set(withdrawData);
+            
+            // Save to global pending requests for Admin
+            database.ref('pendingWithdrawals/' + withdrawId).set(withdrawData).then(() => {
                 currentUser.bal = newBal;
                 localStorage.setItem('dkj_user_login', JSON.stringify(currentUser));
                 updateUI();
 
                 sendTelegramWithdrawNotification(currentUser.name, currentUser.mob, reqAmt, name, bank, acc, ifsc);
 
-                alert("✅ Withdrawal Request Success! Admin ko aapki request bhej di gayi hai. 24 ghante mein payment mil jayegi.");
-                closePopup();
+                alert("✅ Withdrawal Request Success! Status 'PENDING' hai. Payment milte hi SUCCESSFUL ho jayega.");
+                showProfile();
             });
         }
     }
@@ -252,6 +272,108 @@
         let url = `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
 
         fetch(url).catch(err => console.error("Telegram API Error:", err));
+    }
+
+    function showProfile() {
+        if(!currentUser) return alert("Login First!");
+        
+        let h = `<h2>👤 MY PROFILE</h2>
+                 <p><b>Name:</b> ${currentUser.name}</p>
+                 <p><b>Mobile:</b> ${currentUser.mob}</p>
+                 <p><b>Balance:</b> ₹${currentUser.bal||0}</p>
+                 <hr style="border-color:#444; margin:15px 0;">
+                 <h3>📜 WITHDRAWAL HISTORY</h3>
+                 <div id="wHistoryList" style="text-align:left; max-height:200px; overflow-y:auto;">Loading history...</div>
+                 <button class="btn btn-dark" onclick="logout()" style="margin-top:15px;">LOGOUT</button>`;
+                 
+        document.getElementById('pContent').innerHTML = h;
+        document.getElementById('popup').style.display = 'block';
+
+        // Load History from Firebase
+        if(database) {
+            database.ref('withdrawals/' + currentUser.mob).once('value', snapshot => {
+                let listHtml = "";
+                let data = snapshot.val();
+                if(!data) {
+                    listHtml = "<p style='text-align:center; color:#888;'>Koi Withdrawal Request Nahi Hai.</p>";
+                } else {
+                    Object.keys(data).reverse().forEach(key => {
+                        let item = data[key];
+                        let statusBadge = item.status === 'PENDING' 
+                            ? `<span class="badge-pending">⏳ PENDING</span>` 
+                            : `<span class="badge-success">✅ SUCCESSFUL</span>`;
+                        
+                        listHtml += `<div class="list-item">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <b>₹${item.amt}</b>
+                                ${statusBadge}
+                            </div>
+                            <small style="color:#aaa;">Date: ${item.date}</small><br>
+                            <small style="color:#aaa;">To: ${item.bankName} (${item.accNo})</small>
+                        </div>`;
+                    });
+                }
+                document.getElementById('wHistoryList').innerHTML = listHtml;
+            });
+        }
+    }
+
+    // 🔑 ADMIN PANEL CONTROL (Password: 7860)
+    function adminMode() {
+        let pw = prompt("Admin Password:"); 
+        if(pw !== "7860") return alert("Galat Password!");
+        
+        let h = `<h2>👑 ADMIN CONTROL PANEL</h2>
+                 <p style="font-size:12px; color:#aaa;">Pending Withdrawals Ko Approve Karke Successful Karein:</p>
+                 <div id="adminPendingList" style="text-align:left; max-height:350px; overflow-y:auto;">Loading Pending Requests...</div>`;
+                 
+        document.getElementById('pContent').innerHTML = h;
+        document.getElementById('popup').style.display = 'block';
+
+        loadAdminRequests();
+    }
+
+    function loadAdminRequests() {
+        if(database) {
+            database.ref('pendingWithdrawals').once('value', snapshot => {
+                let listHtml = "";
+                let data = snapshot.val();
+                if(!data) {
+                    listHtml = "<p style='text-align:center; color:#27ae60; font-weight:bold;'>🎉 Koi Pending Withdrawal Request Nahi Hai!</p>";
+                } else {
+                    Object.keys(data).forEach(wId => {
+                        let item = data[wId];
+                        listHtml += `<div class="list-item" style="border-left-color:#e74c3c;">
+                            <b>User:</b> ${item.userName} (${item.userMob})<br>
+                            <b style="color:#27ae60; font-size:16px;">Amount: ₹${item.amt}</b><br>
+                            <small><b>Bank/UPI:</b> ${item.bankName}</small><br>
+                            <small><b>Account/UPI ID:</b> ${item.accNo}</small><br>
+                            <small><b>A/C Holder Name:</b> ${item.accName}</small><br>
+                            <small><b>IFSC Code:</b> ${item.ifsc}</small><br>
+                            <button class="btn btn-gold" onclick="approveWithdrawal('${item.userMob}', '${wId}')" style="margin-top:8px; padding:8px; font-size:12px;">✅ APPROVE & MARK SUCCESSFUL</button>
+                        </div>`;
+                    });
+                }
+                document.getElementById('adminPendingList').innerHTML = listHtml;
+            });
+        }
+    }
+
+    function approveWithdrawal(userMob, withdrawId) {
+        if(confirm("Kya aapne is user ko paise bhej diye hain? Is request ko SUCCESSFUL mark karein?")) {
+            if(database) {
+                // Update User History to SUCCESSFUL
+                database.ref('withdrawals/' + userMob + '/' + withdrawId).update({
+                    status: 'SUCCESSFUL'
+                });
+
+                // Remove from Admin Pending List
+                database.ref('pendingWithdrawals/' + withdrawId).remove().then(() => {
+                    alert("✅ Withdrawal Request Successfully Approved!");
+                    loadAdminRequests(); // Refresh list
+                });
+            }
+        }
     }
 
     function showReg() {
@@ -292,12 +414,6 @@
         }
     }
 
-    function showProfile() {
-        if(!currentUser) return alert("Login First!");
-        document.getElementById('pContent').innerHTML = `<h2>MY PROFILE</h2><p><b>Name:</b> ${currentUser.name}</p><p><b>Mobile:</b> ${currentUser.mob}</p><p><b>Balance:</b> ₹${currentUser.bal||0}</p><button class="btn btn-dark" onclick="logout()">LOGOUT</button>`;
-        document.getElementById('popup').style.display = 'block';
-    }
-
     function logout() { localStorage.clear(); location.reload(); }
 
     function showWinners() {
@@ -322,11 +438,6 @@
     function joinDraw(amt) {
         if(!currentUser) return alert("Pehle Login Karein!");
         alert("Payment Gateway Feature coming soon!");
-    }
-
-    function adminMode() {
-        let pw = prompt("Admin Password:"); if(pw !== "7860") return;
-        alert("Welcome Admin!");
     }
 
     function updateUI() {
