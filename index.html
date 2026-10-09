@@ -88,8 +88,8 @@
     <button class="btn btn-dark" onclick="showProfile()">👤 MY PROFILE & WITHDRAW HISTORY</button>
     <button class="btn btn-gold" onclick="showWinners()">🏆 TOP WINNERS (MIN ₹200)</button>
     <button class="btn" style="background:#444; color:white;" onclick="showTC()">📄 TERMS & CONDITIONS</button>
-    <!-- Direct Telegram App Launcher -->
-    <button class="btn btn-tg" onclick="openTelegramGroup()">📢 TELEGRAM CHANNEL</button>
+    <!-- Direct Open Link for Telegram -->
+    <a href="https://t.me/dkj_knowledge_jackoprt" target="_blank" class="btn btn-tg">📢 TELEGRAM CHANNEL</a>
 </div>
 
 <div id="popup">
@@ -126,7 +126,7 @@
         { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytId: "HZXhp5GoXig", reward: 5, secretCode: "DKJ101" },
         { id: "v2", title: "🔥 Video 2: Mega Jackpot Winning Tricks", ytId: "3JZ_D3ELwOQ", reward: 10, secretCode: "DKJ202" },
         { id: "v3", title: "🧠 Video 3: Daily Quiz Bonus Video", ytId: "L_LUpnjgPso", reward: 5, secretCode: "DKJ303" },
-        { id: "v4", title: "💰 Video 4: Special ₹15 Reward Video", ytId: "fJ9rUzIMcZQ", reward: 5, secretCode: "DKJ404" },
+        { id: "v4", title: "💰 Video 4: Special ₹5 Reward Video", ytId: "fJ9rUzIMcZQ", reward: 5, secretCode: "DKJ404" },
         { id: "v5", title: "🎁 Video 5: Secret Giveaway Code", ytId: "kJQP7kiw5Fk", reward: 10, secretCode: "DKJ505" }
     ];
 
@@ -142,29 +142,17 @@
         document.getElementById('pContent').innerHTML = ''; 
     }
 
-    // 🚀 FORCE OPEN YOUTUBE NATIVE APP (FORCE BYPASS WEBVIEW)
-    function launchYouTubeApp(ytId) {
-        if(!ytId) return alert("Video ID sahi nahi hai!");
-        let intentUrl = "intent://www.youtube.com/watch?v=" + ytId + "#Intent;package=com.google.android.youtube;scheme=https;end;";
-        window.location.href = intentUrl;
-    }
-
-    // 📱 FIXED TELEGRAM LINK
-    function openTelegramGroup() {
-        let tgUsername = "dkj_knowledge_jackoprt";
-        window.location.href = "intent://resolve?domain=" + tgUsername + "#Intent;package=org.telegram.messenger;scheme=tg;end;";
-    }
-
     function openVideoModal() {
         if(!currentUser) return alert("Pehle Login ya Register karein!");
         
         let h = "<h2>📺 WATCH & EARN VIDEOS</h2><p style='font-size:12px; color:#aaa;'>Pehle 'WATCH ON YOUTUBE' par click karke video dekhein & Subscribe karein, phir Secret Code daal kar claim karein:</p>";
         ytVideos.forEach(v => {
+            let ytAppUrl = "https://www.youtube.com/watch?v=" + v.ytId;
             h += `
                 <div style="background:#1a1a1a; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #333; text-align:center;">
                     <div style="font-weight:bold; font-size:14px; color:#f39c12; margin-bottom:8px;">${v.title}</div>
                     
-                    <button class="btn-yt" onclick="launchYouTubeApp('${v.ytId}')">▶ WATCH ON YOUTUBE APP & SUBSCRIBE</button>
+                    <a href="${ytAppUrl}" target="_blank" class="btn-yt">▶ WATCH ON YOUTUBE APP & SUBSCRIBE</a>
 
                     <div style="color:#27ae60; font-weight:bold; font-size:13px; margin-bottom:8px;">REWARD: +₹${v.reward}</div>
                     
@@ -256,10 +244,8 @@
         if(database) {
             database.ref('users/' + currentUser.mob).update({ bal: newBal });
             
-            // Save to user history
             database.ref('withdrawals/' + currentUser.mob + '/' + withdrawId).set(withdrawData);
             
-            // Save to global pending requests for Admin
             database.ref('pendingWithdrawals/' + withdrawId).set(withdrawData).then(() => {
                 currentUser.bal = newBal;
                 localStorage.setItem('dkj_user_login', JSON.stringify(currentUser));
@@ -331,7 +317,6 @@
         }
     }
 
-    // 🔑 ADMIN PANEL CONTROL (Password: 7860)
     function adminMode() {
         let pw = prompt("Admin Password:"); 
         if(pw !== "7860") return alert("Galat Password!");
