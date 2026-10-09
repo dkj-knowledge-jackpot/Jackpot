@@ -120,12 +120,12 @@
     const TG_BOT_TOKEN = "8357735991:AAHUnhnXj0MaNi-Z1XtitwMy994xssKRsyg";
     const TG_CHAT_ID = "8072402346";
 
-    // 🎬 VIDEOS LIST (Aapki video ID HZXhp5GoXig yahan add kar di gayi hai)
+    // 🎬 VIDEOS LIST
     const ytVideos = [
-        { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytId: "d7evoZve4Wk", reward: 5, secretCode: "DKJ101" },
+        { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytId: "HZXhp5GoXig", reward: 5, secretCode: "DKJ101" },
         { id: "v2", title: "🔥 Video 2: Mega Jackpot Winning Tricks", ytId: "3JZ_D3ELwOQ", reward: 10, secretCode: "DKJ202" },
         { id: "v3", title: "🧠 Video 3: Daily Quiz Bonus Video", ytId: "L_LUpnjgPso", reward: 5, secretCode: "DKJ303" },
-        { id: "v4", title: "💰 Video 4: Special ₹15 Reward Video", ytId: "fJ9rUzIMcZQ", reward: 15, secretCode: "DKJ404" },
+        { id: "v4", title: "💰 Video 4: Special ₹15 Reward Video", ytId: "fJ9rUzIMcZQ", reward: 5, secretCode: "DKJ404" },
         { id: "v5", title: "🎁 Video 5: Secret Giveaway Code", ytId: "kJQP7kiw5Fk", reward: 10, secretCode: "DKJ505" }
     ];
 
@@ -141,11 +141,19 @@
         document.getElementById('pContent').innerHTML = ''; 
     }
 
-    // 🚀 DIRECT YOUTUBE APP OPENING FUNCTION
+    // 📱 DIRECT ANDROID YOUTUBE NATIVE APP DEEP-LINKING
     function launchYouTubeApp(ytId) {
         if(!ytId) return alert("Video ID sahi nahi hai!");
-        let targetUrl = "https://www.youtube.com/watch?v=" + ytId;
-        window.location.href = targetUrl;
+        
+        // Android Deep Link Intent URL (Direct Opens Phone's Installed YouTube App)
+        let intentUrl = "intent://www.youtube.com/watch?v=" + ytId + "#Intent;package=com.google.android.youtube;scheme=https;end;";
+        
+        try {
+            window.location.href = intentUrl;
+        } catch(e) {
+            // Fallback if Intent fails
+            window.location.href = "vnd.youtube:" + ytId;
+        }
     }
 
     function openVideoModal() {
@@ -157,7 +165,7 @@
                 <div style="background:#1a1a1a; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #333; text-align:center;">
                     <div style="font-weight:bold; font-size:14px; color:#f39c12; margin-bottom:8px;">${v.title}</div>
                     
-                    <button class="btn-yt" onclick="launchYouTubeApp('${v.ytId}')">▶ WATCH ON YOUTUBE & SUBSCRIBE</button>
+                    <button class="btn-yt" onclick="launchYouTubeApp('${v.ytId}')">▶ WATCH ON YOUTUBE APP & SUBSCRIBE</button>
 
                     <div style="color:#27ae60; font-weight:bold; font-size:13px; margin-bottom:8px;">REWARD: +₹${v.reward}</div>
                     
