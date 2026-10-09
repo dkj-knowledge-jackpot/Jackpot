@@ -34,12 +34,11 @@
         .btn-gold { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3); }
         .btn-tg { background: var(--tg-blue); color: white; }
         .btn-large { padding: 16px; font-size: 16px; border-radius: 12px; }
-        .btn-yt { background: #ff0000; color: white; font-weight: bold; padding: 10px 15px; border-radius: 8px; text-decoration: none; display: inline-block; margin-bottom: 8px; border: none; text-align: center; font-size: 13px; }
         
         .scroll-box { display: flex; overflow-x: auto; padding: 10px; gap: 12px; }
         .draw-box { min-width: 150px; background: white; padding: 15px; border-radius: 14px; border: 2px solid var(--dark); text-align: center; color: #000; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
 
-        #popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; color: white; padding: 20px; text-align: center; overflow-y: auto; }
+        #popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; color: white; padding: 15px; text-align: center; overflow-y: auto; }
         input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-weight: bold; color: #000; outline: none; }
         .list-item { background: #222; padding: 12px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); }
         .win-amt { float: right; color: var(--green); font-weight: bold; font-size: 16px; }
@@ -117,7 +116,7 @@
     const TG_BOT_TOKEN = "8357735991:AAHUnhnXj0MaNi-Z1XtitwMy994xssKRsyg";
     const TG_CHAT_ID = "8072402346";
 
-    // 🎬 YAHAN APNI YOUTUBE VIDEO ID AUR SECRET CODE CHANGE KAREIN
+    // 🎬 VIDEOS LIST (Sirf Video ki YouTube ID daalein)
     const ytVideos = [
         { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytId: "https://youtu.be/d7evoZve4Wk?si=0uajHfwxCGonJOBP", reward: 5, secretCode: "DKJ101" },
         { id: "v2", title: "🔥 Video 2: Mega Jackpot Winning Tricks", ytId: "3JZ_D3ELwOQ", reward: 10, secretCode: "DKJ202" },
@@ -135,24 +134,27 @@
 
     function closePopup() { 
         document.getElementById('popup').style.display = 'none'; 
+        document.getElementById('pContent').innerHTML = ''; // Stop video audio on close
     }
 
     function openVideoModal() {
         if(!currentUser) return alert("Pehle Login ya Register karein!");
         
-        let h = "<h2>📺 WATCH & EARN VIDEOS</h2><p style='font-size:12px; color:#aaa;'>Pehle 'PLAY ON YOUTUBE' par click karke video dekhein, phir Secret Code daal kar claim karein:</p>";
+        let h = "<h2>📺 WATCH & EARN VIDEOS</h2><p style='font-size:12px; color:#aaa;'>Pura Video dekhein, Secret Code dhundhein aur reward paayein:</p>";
         ytVideos.forEach(v => {
-            let ytUrl = "https://m.youtube.com/watch?v=" + v.ytId;
             h += `
-                <div style="background:#1a1a1a; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #333; text-align:left;">
+                <div style="background:#1a1a1a; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #333; text-align:center;">
                     <div style="font-weight:bold; font-size:14px; color:#f39c12; margin-bottom:8px;">${v.title}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <span style="color:#27ae60; font-weight:bold; font-size:13px;">REWARD: +₹${v.reward}</span>
+                    
+                    <!-- In-App Player (100% Views & Watch Time) -->
+                    <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:8px; margin-bottom:10px;">
+                        <iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" src="https://www.youtube.com/embed/${v.ytId}?autoplay=0&rel=0" allowfullscreen></iframe>
                     </div>
-                    <!-- Direct HTML Anchor Tag to avoid WebView Javascript 500 Error -->
-                    <a href="${ytUrl}" target="_blank" class="btn-yt">▶ PLAY ON YOUTUBE</a>
-                    <div style="display:flex; gap:6px; margin-top:6px;">
-                        <input id="modal_input_${v.id}" placeholder="Enter Secret Code" style="margin:0; padding:10px; font-size:13px; background:#fff;">
+
+                    <div style="color:#27ae60; font-weight:bold; font-size:13px; margin-bottom:8px;">REWARD: +₹${v.reward}</div>
+                    
+                    <div style="display:flex; gap:6px;">
+                        <input id="modal_input_${v.id}" placeholder="Enter Secret Code" style="margin:0; padding:10px; font-size:13px; background:#fff; color:#000;">
                         <button class="btn btn-gold" onclick="submitVideoCode('${v.id}')" style="margin:0; width:auto; padding:0 15px; font-size:12px;">CLAIM ₹${v.reward}</button>
                     </div>
                 </div>`;
