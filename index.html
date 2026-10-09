@@ -88,7 +88,8 @@
     <button class="btn btn-dark" onclick="showProfile()">👤 MY PROFILE & WITHDRAW HISTORY</button>
     <button class="btn btn-gold" onclick="showWinners()">🏆 TOP WINNERS (MIN ₹200)</button>
     <button class="btn" style="background:#444; color:white;" onclick="showTC()">📄 TERMS & CONDITIONS</button>
-    <a href="https://t.me/dkj_knowledge_jackoprt" target="_blank" class="btn btn-tg">📢 TELEGRAM CHANNEL</a>
+    <!-- Direct Telegram App Launcher -->
+    <button class="btn btn-tg" onclick="openTelegramGroup()">📢 TELEGRAM CHANNEL</button>
 </div>
 
 <div id="popup">
@@ -141,19 +142,16 @@
         document.getElementById('pContent').innerHTML = ''; 
     }
 
-    // 📱 DIRECT ANDROID YOUTUBE NATIVE APP DEEP-LINKING
-    function launchYouTubeApp(ytId) {
-        if(!ytId) return alert("Video ID sahi nahi hai!");
+    // 📱 FIXED TELEGRAM LINK (App Scheme + Fallback)
+    function openTelegramGroup() {
+        let tgUsername = "dkj_knowledge_jackoprt";
+        // Pehle direct Telegram App kholne ki koshish karega
+        window.location.href = "tg://resolve?domain=" + tgUsername;
         
-        // Android Deep Link Intent URL (Direct Opens Phone's Installed YouTube App)
-        let intentUrl = "intent://www.youtube.com/watch?v=" + ytId + "#Intent;package=com.google.android.youtube;scheme=https;end;";
-        
-        try {
-            window.location.href = intentUrl;
-        } catch(e) {
-            // Fallback if Intent fails
-            window.location.href = "vnd.youtube:" + ytId;
-        }
+        // Agar App nahi khuli toh 1 second baad browser wala link kholega
+        setTimeout(function() {
+            window.location.href = "https://t.me/" + tgUsername;
+        }, 1000);
     }
 
     function openVideoModal() {
@@ -161,11 +159,12 @@
         
         let h = "<h2>📺 WATCH & EARN VIDEOS</h2><p style='font-size:12px; color:#aaa;'>Pehle 'WATCH ON YOUTUBE' par click karke video dekhein & Subscribe karein, phir Secret Code daal kar claim karein:</p>";
         ytVideos.forEach(v => {
+            let targetUrl = "https://www.youtube.com/watch?v=" + v.ytId;
             h += `
                 <div style="background:#1a1a1a; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #333; text-align:center;">
                     <div style="font-weight:bold; font-size:14px; color:#f39c12; margin-bottom:8px;">${v.title}</div>
                     
-                    <button class="btn-yt" onclick="launchYouTubeApp('${v.ytId}')">▶ WATCH ON YOUTUBE APP & SUBSCRIBE</button>
+                    <a href="${targetUrl}" target="_blank" class="btn-yt">▶ WATCH ON YOUTUBE APP & SUBSCRIBE</a>
 
                     <div style="color:#27ae60; font-weight:bold; font-size:13px; margin-bottom:8px;">REWARD: +₹${v.reward}</div>
                     
