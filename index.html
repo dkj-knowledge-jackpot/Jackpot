@@ -100,7 +100,6 @@
 <script>
     let currentUser = JSON.parse(localStorage.getItem('dkj_user_login')) || null;
 
-    // Aapki Real Firebase Keys (Jo aapne screenshot me di thin)[cite: 3]
     const firebaseConfig = {
         apiKey: "AIzaSyDxRxlv21GBhqvSLqctiQpJNzkbSCZ_ek",
         authDomain: "dkj-knowledge-jackpot.firebaseapp.com",
@@ -123,9 +122,9 @@
     const TG_BOT_TOKEN = "8357735991:AAHUnhnXj0MaNi-Z1XtitwMy994xssKRsyg";
     const TG_CHAT_ID = "8072402346";
 
-    // 🎬 VIDEOS LIST (Yahan aap apni YouTube video ki id dal sakte hain)
+    // 🎬 VIDEOS LIST
     const ytVideos = [
-        { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytId: "d7evoZve4Wk", reward: 5, secretCode: "DKJ101" },
+        { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytId: "HZXhp5GoXig", reward: 5, secretCode: "DKJ101" },
         { id: "v2", title: "🔥 Video 2: Mega Jackpot Winning Tricks", ytId: "3JZ_D3ELwOQ", reward: 10, secretCode: "DKJ202" },
         { id: "v3", title: "🧠 Video 3: Daily Quiz Bonus Video", ytId: "L_LUpnjgPso", reward: 5, secretCode: "DKJ303" },
         { id: "v4", title: "💰 Video 4: Special ₹5 Reward Video", ytId: "fJ9rUzIMcZQ", reward: 5, secretCode: "DKJ404" },
@@ -144,22 +143,23 @@
         document.getElementById('pContent').innerHTML = ''; 
     }
 
-    // Native YouTube App Intent Function (Browser ki jagah direct YouTube App kholne ke liye)
+    // Fix: Reliable YouTube Link Opener (Html Anchor tag as a button)
     function openYouTubeVideo(ytId) {
-        let intentUrl = `intent://www.youtube.com/watch?v=${ytId}#Intent;package=com.google.android.youtube;scheme=https;end;`;
-        window.location.href = intentUrl;
+        let ytUrl = "https://www.youtube.com/watch?v=" + ytId;
+        window.open(ytUrl, '_blank');
     }
 
     function openVideoModal() {
         if(!currentUser) return alert("Pehle Login ya Register karein!");
         
-        let h = "<h2>📺 WATCH & EARN VIDEOS</h2><p style='font-size:12px; color:#aaa;'>Pehle 'WATCH ON YOUTUBE APP' par click karke video dekhein & Subscribe karein, phir Secret Code daal kar claim karein:</p>";
+        let h = "<h2>📺 WATCH & EARN VIDEOS</h2><p style='font-size:12px; color:#aaa;'>Pehle 'WATCH ON YOUTUBE' par click karke video dekhein & Subscribe karein, phir Secret Code daal kar claim karein:</p>";
         ytVideos.forEach(v => {
+            let directUrl = "https://www.youtube.com/watch?v=" + v.ytId;
             h += `
                 <div style="background:#1a1a1a; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #333; text-align:center;">
                     <div style="font-weight:bold; font-size:14px; color:#f39c12; margin-bottom:8px;">${v.title}</div>
                     
-                    <button class="btn-yt" onclick="openYouTubeVideo('${v.ytId}')">▶ WATCH ON YOUTUBE APP & SUBSCRIBE</button>
+                    <a href="${directUrl}" target="_blank" class="btn-yt">▶ WATCH ON YOUTUBE & SUBSCRIBE</a>
 
                     <div style="color:#27ae60; font-weight:bold; font-size:13px; margin-bottom:8px;">REWARD: +₹${v.reward}</div>
                     
@@ -399,9 +399,8 @@
 
         if(!n || !m || !p) return alert("Saari Details Bharein!");
 
-        // Device Anti-Fraud Check (Zero OTP Cost)
         let isDeviceRegistered = localStorage.getItem("app_device_registered");
-        let referCode = m; // Mobile number hi user ka unique refer code ban jayega
+        let referCode = m;
 
         if(database) {
             database.ref('users/' + m).once('value', snapshot => {
@@ -409,7 +408,6 @@
                     return alert("Ye mobile number pehle se registered hai! Login karein.");
                 }
 
-                // 1. Naya Account Save Karein
                 database.ref('users/' + m).set({
                     name: n,
                     mob: m,
@@ -419,14 +417,12 @@
                     createdAt: Date.now()
                 }).then(() => {
                     
-                    // 2. Refer Code Bonus Logic (₹10 Bonus agar device naya hai)
                     if(enteredReferCode !== "" && !isDeviceRegistered) {
                         creditReferralBonus(enteredReferCode);
                     } else if(isDeviceRegistered && enteredReferCode !== "") {
                         alert("Account Created! Par is device par pehle account ban chuka hai, isliye Refer Bonus nahi mila.");
                     }
 
-                    // 3. Device lock save karein
                     localStorage.setItem("app_device_registered", "true");
 
                     currentUser = { name: n, mob: m, bal: 0, referCode: referCode };
@@ -439,7 +435,6 @@
         }
     }
 
-    // Purane Referrer Ko ₹10 Bonus Dene Ka Function
     function creditReferralBonus(referrerCode) {
         let referrerRef = database.ref('users/' + referrerCode + '/balance');
         referrerRef.transaction((currentBalance) => {
