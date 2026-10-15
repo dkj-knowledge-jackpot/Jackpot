@@ -53,8 +53,8 @@
       Note: Video ko YouTube App mein LIKE aur Channel ko SUBSCRIBE zaroor karein!
     </p>
 
-    <!-- Yahan aap baad mein apni asli 5 videos ki IDs replace kar sakte hain -->
-    <button class="watch-btn" onclick="openYouTubeVideo('HZXhp5GoXig')">▶ Watch Demo Video 1</button>
+    <!-- 5 Demo Videos (Baad me inki jagah apni videos ki ID dal sakte hain) -->
+    <button class="watch-btn" onclick="openYouTubeVideo('dQw4w9WgXcQ')">▶ Watch Demo Video 1</button>
     <button class="watch-btn" onclick="openYouTubeVideo('3JZ_D3ELwOQ')">▶ Watch Demo Video 2</button>
     <button class="watch-btn" onclick="openYouTubeVideo('9bZkp7q19f0')">▶ Watch Demo Video 3</button>
     <button class="watch-btn" onclick="openYouTubeVideo('JGwWNGJdvx8')">▶ Watch Demo Video 4</button>
@@ -130,7 +130,7 @@
     // -------------------------------------------------------------
     // Purane Referrer Ko ₹10 Bonus Dene Ka Function
     // -------------------------------------------------------------
-    creditReferralBonus = function(referrerCode) {
+    function creditReferralBonus(referrerCode) {
       const referrerBalanceRef = db.ref('users/' + referrerCode + '/balance');
       referrerBalanceRef.transaction((currentBalance) => {
         return (currentBalance || 0) + 10;
