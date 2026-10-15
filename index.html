@@ -1,194 +1,532 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DKJ Knowledge Jackpot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DKJ KNOWLEDGE JACKPOT - WATCH & EARN</title>
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-  <!-- Firebase Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        :root { --gold: #f39c12; --dark: #0f2027; --tg-blue: #0088cc; --green: #27ae60; --red: #e74c3c; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f3; margin: 0; padding-bottom: 90px; }
+        
+        .header { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: var(--gold); padding: 15px; text-align: center; border-bottom: 3px solid var(--gold); box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; }
+        .marquee-box { background: #111; color: #fff; padding: 6px; font-weight: bold; font-size: 13px; border-bottom: 1px solid var(--gold); }
+        
+        .vip-earn-box { background: linear-gradient(135deg, #ffffff, #fff9e6); margin: 15px; padding: 20px; border-radius: 20px; border: 3px solid var(--gold); box-shadow: 0 8px 25px rgba(243, 156, 18, 0.25); text-align: center; position: relative; overflow: hidden; }
+        .vip-badge { position: absolute; top: 0; right: 0; background: var(--red); color: white; padding: 4px 15px; font-size: 11px; font-weight: bold; border-bottom-left-radius: 12px; }
+        .vip-title { font-size: 20px; font-weight: 900; color: #2c3e50; margin-bottom: 8px; }
+        .vip-sub { font-size: 13px; color: #666; margin-bottom: 15px; font-weight: 600; }
+        
+        .card { background: white; margin: 14px; padding: 18px; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: center; border: 1px solid #e1e8ed; }
+        .bal-text { font-size: 38px; color: var(--green); font-weight: 800; margin: 8px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        
+        .pg-container { background: #e0e0e0; height: 12px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
+        .pg-bar { background: linear-gradient(90deg, #f39c12, #f1c40f); height: 100%; width: 0%; transition: 0.5s; }
+        
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; display: block; text-decoration: none; text-align: center; font-size: 14px; outline: none; }
+        .btn:hover { opacity: 0.9; }
+        .btn:active { transform: scale(0.98); }
+        .btn-dark { background: var(--dark); color: white; }
+        .btn-gold { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3); }
+        .btn-tg { background: var(--tg-blue); color: white; }
+        .btn-large { padding: 16px; font-size: 16px; border-radius: 12px; }
+        .btn-yt { background: #ff0000; color: white; font-weight: bold; padding: 12px; border-radius: 8px; text-decoration: none; display: block; text-align: center; font-size: 14px; border: none; cursor: pointer; margin-bottom: 10px; }
+        
+        .scroll-box { display: flex; overflow-x: auto; padding: 10px; gap: 12px; }
+        .draw-box { min-width: 150px; background: white; padding: 15px; border-radius: 14px; border: 2px solid var(--dark); text-align: center; color: #000; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
 
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f9; }
-    .card { background: white; padding: 20px; margin: 15px auto; max-width: 400px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-    input { width: 80%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; }
-    button { background-color: #28a745; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-    button.watch-btn { background-color: #ff0000; display: block; width: 100%; margin-bottom: 10px; }
-    button.share-btn { background-color: #0088cc; }
-    .hidden { display: none; }
-  </style>
+        #popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; color: white; padding: 15px; text-align: center; overflow-y: auto; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: none; font-weight: bold; color: #000; outline: none; }
+        .list-item { background: #222; padding: 12px; border-radius: 8px; margin-bottom: 8px; text-align: left; border-left: 4px solid var(--gold); }
+        .win-amt { float: right; color: var(--green); font-weight: bold; font-size: 16px; }
+        
+        .badge-pending { background: #f39c12; color: #000; padding: 3px 8px; border-radius: 5px; font-weight: bold; font-size: 11px; }
+        .badge-success { background: #27ae60; color: #fff; padding: 3px 8px; border-radius: 5px; font-weight: bold; font-size: 11px; }
+    </style>
 </head>
 <body>
 
-  <h2>DKJ Knowledge Jackpot</h2>
+<div class="marquee-box"><marquee>🔥 Watch Youtube Videos, Enter Code & Earn Real Cash Daily! 🔥</marquee></div>
 
-  <!-- 1. SIGNUP / LOGIN SECTION -->
-  <div id="auth-section" class="card">
-    <h3>Register / Login</h3>
-    <input type="text" id="username" placeholder="Apna Naam Likhein"><br>
-    <input type="text" id="referCodeInput" placeholder="Referral Code (Optional)"><br>
-    <button onclick="registerOrLogin()">Start / Sign In</button>
-  </div>
+<div class="header" onclick="adminMode()">
+    <h1 style="margin:0; font-size:18px; letter-spacing:1px;">DKJ KNOWLEDGE JACKPOT</h1>
+    <div id="uHi" style="font-size: 11px; color: #d1d8e0; margin-top: 5px;">Welcome Guest (Click for Admin)</div>
+</div>
 
-  <!-- 2. USER DASHBOARD SECTION -->
-  <div id="dashboard-section" class="card hidden">
-    <h3>Welcome, <span id="user-display-name">User</span>!</h3>
-    <p style="font-size: 20px; font-weight: bold; color: #28a745;">
-      Balance: ₹<span id="user-balance">0</span>
-    </p>
+<div class="vip-earn-box">
+    <div class="vip-badge">HOT DEAL 🔥</div>
+    <div class="vip-title">📺 WATCH VIDEO & EARN MONEY 💰</div>
+    <div class="vip-sub">Video dekho, Secret Code dhundho aur turant Wallet balance mein Cash pao!</div>
+    <button class="btn btn-gold btn-large" onclick="openVideoModal()">▶ WATCH VIDEOS NOW (EARN ₹5 - ₹15)</button>
+</div>
 
-    <hr>
+<div class="card">
+    <p style="margin:0; font-weight:bold; color: #7f8c8d; font-size: 12px;">MY WALLET BALANCE</p>
+    <div class="bal-text" id="vBal">₹0</div>
+    <button class="btn btn-dark" onclick="showWithdrawForm()">WITHDRAW MONEY (MIN ₹200)</button>
+</div>
 
-    <!-- Refer Section -->
-    <h4>Refer & Earn ₹10</h4>
-    <p>Apna Refer Code: <strong id="my-refer-code" style="color: #0088cc;">-</strong></p>
-    <button class="share-btn" onclick="shareReferralLink()">Refer Code Copy Karein</button>
+<div class="card">
+    <p style="margin:0; font-size:12px; font-weight:bold; color:#555;">REFER & EARN: GET ₹10 BONUS</p>
+    <p style="font-size:12px; color:#666; margin:5px 0;">Apna Refer Code doston ke sath share karein!</p>
+    <button class="btn btn-gold" onclick="copyInvite()">📋 COPY REFER CODE & LINK</button>
+</div>
 
-    <hr>
+<div class="scroll-box">
+    <div class="draw-box" style="border-color: var(--gold);"><h3>MEGA</h3><h2>₹100</h2><button class="btn btn-dark" onclick="joinDraw(100)">JOIN NOW</button></div>
+    <div class="draw-box" style="opacity:0.6; background:#eee;"><h3>SILVER</h3><h2>₹200</h2><button class="btn" style="background:#888; color:white; cursor:not-allowed;">LOCKED</button></div>
+    <div class="draw-box" style="opacity:0.6; background:#eee;"><h3>GOLD</h3><h2>₹500</h2><button class="btn" style="background:#888; color:white; cursor:not-allowed;">LOCKED</button></div>
+</div>
 
-    <!-- Watch Video Section (5 Demo Videos) -->
-    <h4>Watch & Earn (Demo Videos)</h4>
-    <p style="font-size: 13px; color: #666;">
-      Note: Video ko YouTube App mein LIKE aur Channel ko SUBSCRIBE zaroor karein!
-    </p>
+<div style="padding: 10px;">
+    <button class="btn btn-gold" onclick="showReg()">➕ CREATE ACCOUNT</button>
+    <button class="btn btn-dark" onclick="showLogin()">🔑 LOGIN ACCOUNT</button>
+    <button class="btn btn-dark" onclick="showProfile()">👤 MY PROFILE & WITHDRAW HISTORY</button>
+    <button class="btn btn-gold" onclick="showWinners()">🏆 TOP WINNERS (MIN ₹200)</button>
+    <button class="btn" style="background:#444; color:white;" onclick="showTC()">📄 TERMS & CONDITIONS</button>
+    <!-- Direct Open Link for Telegram -->
+    <a href="https://t.me/dkj_knowledge_jackoprt" target="_blank" class="btn btn-tg">📢 TELEGRAM CHANNEL</a>
+</div>
 
-    <!-- 5 Demo Videos (Baad me inki jagah apni videos ki ID dal sakte hain) -->
-    <button class="watch-btn" onclick="openYouTubeVideo('dQw4w9WgXcQ')">▶ Watch Demo Video 1</button>
-    <button class="watch-btn" onclick="openYouTubeVideo('3JZ_D3ELwOQ')">▶ Watch Demo Video 2</button>
-    <button class="watch-btn" onclick="openYouTubeVideo('9bZkp7q19f0')">▶ Watch Demo Video 3</button>
-    <button class="watch-btn" onclick="openYouTubeVideo('JGwWNGJdvx8')">▶ Watch Demo Video 4</button>
-    <button class="watch-btn" onclick="openYouTubeVideo('kJQP7kiw5Fk')">▶ Watch Demo Video 5</button>
-  </div>
+<div id="popup">
+    <div id="pContent"></div>
+    <button class="btn" style="margin-top:20px; background:#e74c3c; color:white; padding:12px 40px; border-radius:10px;" onclick="closePopup()">CLOSE</button>
+</div>
 
-  <script>
-    // -------------------------------------------------------------
-    // Firebase Configuration (Aapki Real Keys Set Hain)
-    // -------------------------------------------------------------
+<script>
+    let currentUser = JSON.parse(localStorage.getItem('dkj_user_login')) || null;
+
+    // Aapki Real Firebase Keys (Jo aapne screenshot me di thin)[cite: 3]
     const firebaseConfig = {
-      apiKey: "AIzaSyDxRxlv21GBhqvSLqctiQpJNzkbSCZ_ek",
-      authDomain: "dkj-knowledge-jackpot.firebaseapp.com",
-      databaseURL: "https://dkj-knowledge-jackpot-default-rtdb.firebaseio.com",
-      projectId: "dkj-knowledge-jackpot",
-      storageBucket: "dkj-knowledge-jackpot.appspot.com",
-      messagingSenderId: "485996198291",
-      appId: "1:485996198291:web:8319302c597aa5c34e1066",
-      measurementId: "G-TXSBGKZKC"
+        apiKey: "AIzaSyDxRxlv21GBhqvSLqctiQpJNzkbSCZ_ek",
+        authDomain: "dkj-knowledge-jackpot.firebaseapp.com",
+        databaseURL: "https://dkj-knowledge-jackpot-default-rtdb.firebaseio.com",
+        projectId: "dkj-knowledge-jackpot",
+        storageBucket: "dkj-knowledge-jackpot.appspot.com",
+        messagingSenderId: "485996198291",
+        appId: "1:485996198291:web:8319302c597aa5c34e1066",
+        measurementId: "G-TXSBGKZKC"
     };
 
-    // Firebase Initialize
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
+    try {
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) { 
+            firebase.initializeApp(firebaseConfig); 
+        }
+    } catch(e) { console.error("Firebase Init Error:", e); }
+
+    const database = (typeof firebase !== 'undefined' && firebase.database) ? firebase.database() : null;
+    
+    const TG_BOT_TOKEN = "8357735991:AAHUnhnXj0MaNi-Z1XtitwMy994xssKRsyg";
+    const TG_CHAT_ID = "8072402346";
+
+    // 🎬 VIDEOS LIST (Yahan aap apni YouTube video ki id dal sakte hain)
+    const ytVideos = [
+        { id: "v1", title: "🎬 Video 1: Secret Code Challenge 1", ytId: "d7evoZve4Wk", reward: 5, secretCode: "DKJ101" },
+        { id: "v2", title: "🔥 Video 2: Mega Jackpot Winning Tricks", ytId: "3JZ_D3ELwOQ", reward: 10, secretCode: "DKJ202" },
+        { id: "v3", title: "🧠 Video 3: Daily Quiz Bonus Video", ytId: "L_LUpnjgPso", reward: 5, secretCode: "DKJ303" },
+        { id: "v4", title: "💰 Video 4: Special ₹5 Reward Video", ytId: "fJ9rUzIMcZQ", reward: 5, secretCode: "DKJ404" },
+        { id: "v5", title: "🎁 Video 5: Secret Giveaway Code", ytId: "kJQP7kiw5Fk", reward: 10, secretCode: "DKJ505" }
+    ];
+
+    const demoWinners = [
+        { name: "Rahul Sharma", prize: 500, mob: "919812XXXX", code: "DKJ-4821" },
+        { name: "Sumit Kumar", prize: 200, mob: "919723XXXX", code: "DKJ-1029" },
+        { name: "Ankit Verma", prize: 1000, mob: "918834XXXX", code: "DKJ-9921" },
+        { name: "Priya Singh", prize: 1500, mob: "919102XXXX", code: "DKJ-5041" }
+    ];
+
+    function closePopup() { 
+        document.getElementById('popup').style.display = 'none'; 
+        document.getElementById('pContent').innerHTML = ''; 
     }
-    const db = firebase.database();
 
-    let currentUser = null;
+    // Native YouTube App Intent Function (Browser ki jagah direct YouTube App kholne ke liye)
+    function openYouTubeVideo(ytId) {
+        let intentUrl = `intent://www.youtube.com/watch?v=${ytId}#Intent;package=com.google.android.youtube;scheme=https;end;`;
+        window.location.href = intentUrl;
+    }
 
-    // -------------------------------------------------------------
-    // User Registration & Refer Logic
-    // -------------------------------------------------------------
-    function registerOrLogin() {
-      const name = document.getElementById('username').value.trim();
-      const enteredReferCode = document.getElementById('referCodeInput').value.trim();
+    function openVideoModal() {
+        if(!currentUser) return alert("Pehle Login ya Register karein!");
+        
+        let h = "<h2>📺 WATCH & EARN VIDEOS</h2><p style='font-size:12px; color:#aaa;'>Pehle 'WATCH ON YOUTUBE APP' par click karke video dekhein & Subscribe karein, phir Secret Code daal kar claim karein:</p>";
+        ytVideos.forEach(v => {
+            h += `
+                <div style="background:#1a1a1a; padding:12px; border-radius:12px; margin-bottom:15px; border:1px solid #333; text-align:center;">
+                    <div style="font-weight:bold; font-size:14px; color:#f39c12; margin-bottom:8px;">${v.title}</div>
+                    
+                    <button class="btn-yt" onclick="openYouTubeVideo('${v.ytId}')">▶ WATCH ON YOUTUBE APP & SUBSCRIBE</button>
 
-      if (!name) {
-        alert("Kripya apna naam bharein!");
-        return;
-      }
+                    <div style="color:#27ae60; font-weight:bold; font-size:13px; margin-bottom:8px;">REWARD: +₹${v.reward}</div>
+                    
+                    <div style="display:flex; gap:6px;">
+                        <input id="modal_input_${v.id}" placeholder="Enter Secret Code" style="margin:0; padding:10px; font-size:13px; background:#fff; color:#000;">
+                        <button class="btn btn-gold" onclick="submitVideoCode('${v.id}')" style="margin:0; width:auto; padding:0 15px; font-size:12px;">CLAIM ₹${v.reward}</button>
+                    </div>
+                </div>`;
+        });
+        document.getElementById('pContent').innerHTML = h;
+        document.getElementById('popup').style.display = 'block';
+    }
 
-      const isDeviceRegistered = localStorage.getItem("app_device_registered");
-      const userId = "USER_" + name.replace(/\s+/g, '').toLowerCase() + "_" + Math.floor(1000 + Math.random() * 9000);
-      const userRef = db.ref('users/' + userId);
+    function submitVideoCode(vId) {
+        if(!currentUser) return alert("Pehle Login karein!");
+        const v = ytVideos.find(x => x.id === vId);
+        const inputElem = document.getElementById('modal_input_' + vId);
+        const inputCode = inputElem ? inputElem.value.trim() : "";
+        
+        if(!inputCode) return alert("Secret Code enter karein!");
+        if(inputCode.toUpperCase() !== v.secretCode.toUpperCase()) { return alert("Galat Secret Code!"); }
 
-      userRef.get().then((snapshot) => {
-        if (!snapshot.exists()) {
-          userRef.set({
-            name: name,
-            balance: 0,
-            referCode: userId,
-            createdAt: Date.now()
-          }).then(() => {
-            if (enteredReferCode !== "" && !isDeviceRegistered) {
-              creditReferralBonus(enteredReferCode);
-            } else if (isDeviceRegistered && enteredReferCode !== "") {
-              alert("Is device par pehle se account bana hua hai, isliye Refer Bonus credit nahi hua.");
+        if(database) {
+            database.ref('users/' + currentUser.mob).once('value', snapshot => {
+                let userVal = snapshot.val() || {};
+                let claimed = userVal.claimedVideos || {};
+                if(claimed[vId]) return alert("Aap is video ka reward pehle hi le chuke hain!");
+
+                let oldBal = userVal.bal || 0;
+                let newBal = oldBal + v.reward;
+                
+                database.ref('users/' + currentUser.mob).update({
+                    bal: newBal,
+                    [`claimedVideos/${vId}`]: true
+                }).then(() => {
+                    currentUser.bal = newBal;
+                    localStorage.setItem('dkj_user_login', JSON.stringify(currentUser));
+                    updateUI();
+                    alert(`🎉 Badhai ho! ₹${v.reward} Aapke Wallet mein add ho gaye! Total Balance: ₹${newBal}`);
+                    closePopup();
+                });
+            });
+        }
+    }
+
+    function showWithdrawForm() {
+        if(!currentUser) return alert("Pehle Login Karein!");
+        let currentBal = currentUser.bal || 0;
+        if(currentBal < 200) return alert("Minimum withdrawal limit ₹200 hai! Aapka Balance ₹" + currentBal + " hai.");
+        
+        document.getElementById('pContent').innerHTML = `
+            <h2>WITHDRAW MONEY</h2>
+            <p style="color:#27ae60; font-weight:bold; font-size:16px;">Available Balance: ₹${currentBal}</p>
+            <input id="wAmt" type="number" placeholder="Enter Amount (Min ₹200)" value="${currentBal}">
+            <input id="wName" placeholder="Account Holder Name">
+            <input id="wBank" placeholder="Bank Name / UPI App">
+            <input id="wAcc" placeholder="Account No. / UPI ID">
+            <input id="wIFSC" placeholder="IFSC Code (Bank ke liye)">
+            <button class="btn btn-gold" onclick="doWithdraw()">SUBMIT WITHDRAWAL REQUEST</button>`;
+        document.getElementById('popup').style.display = 'block';
+    }
+
+    function doWithdraw() {
+        let reqAmt = parseInt(document.getElementById('wAmt').value);
+        let name = document.getElementById('wName').value.trim();
+        let bank = document.getElementById('wBank').value.trim();
+        let acc = document.getElementById('wAcc').value.trim();
+        let ifsc = document.getElementById('wIFSC').value.trim() || 'N/A';
+
+        if(!reqAmt || reqAmt < 200) return alert("Minimum Withdrawal ₹200 hona chahiye!");
+        if(reqAmt > (currentUser.bal || 0)) return alert("Aapka Wallet Balance kam hai!");
+        if(!name || !bank || !acc) return alert("Kripya saari bank/UPI details bharein!");
+
+        let newBal = currentUser.bal - reqAmt;
+        let withdrawId = 'W_' + Date.now();
+        let withdrawData = {
+            id: withdrawId,
+            userMob: currentUser.mob,
+            userName: currentUser.name,
+            amt: reqAmt,
+            accName: name,
+            bankName: bank,
+            accNo: acc,
+            ifsc: ifsc,
+            status: 'PENDING',
+            date: new Date().toLocaleString()
+        };
+
+        if(database) {
+            database.ref('users/' + currentUser.mob).update({ bal: newBal });
+            
+            database.ref('withdrawals/' + currentUser.mob + '/' + withdrawId).set(withdrawData);
+            
+            database.ref('pendingWithdrawals/' + withdrawId).set(withdrawData).then(() => {
+                currentUser.bal = newBal;
+                localStorage.setItem('dkj_user_login', JSON.stringify(currentUser));
+                updateUI();
+
+                sendTelegramWithdrawNotification(currentUser.name, currentUser.mob, reqAmt, name, bank, acc, ifsc);
+
+                alert("✅ Withdrawal Request Success! Status 'PENDING' hai. Payment milte hi SUCCESSFUL ho jayega.");
+                showProfile();
+            });
+        }
+    }
+
+    function sendTelegramWithdrawNotification(uName, uMob, amt, accName, bankName, accNo, ifsc) {
+        let text = `🚨 *NEW WITHDRAWAL REQUEST* 🚨\n\n` +
+                   `👤 *User Name:* ${uName}\n` +
+                   `📱 *User Mobile:* ${uMob}\n` +
+                   `💰 *Withdraw Amount:* ₹${amt}\n\n` +
+                   `🏦 *Account Holder:* ${accName}\n` +
+                   `🏛 *Bank/UPI:* ${bankName}\n` +
+                   `🔢 *Acc/UPI ID:* ${accNo}\n` +
+                   `📌 *IFSC Code:* ${ifsc}`;
+
+        let url = `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage?chat_id=${TG_CHAT_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown`;
+
+        fetch(url).catch(err => console.error("Telegram API Error:", err));
+    }
+
+    function showProfile() {
+        if(!currentUser) return alert("Login First!");
+        
+        let h = `<h2>👤 MY PROFILE</h2>
+                 <p><b>Name:</b> ${currentUser.name}</p>
+                 <p><b>Mobile:</b> ${currentUser.mob}</p>
+                 <p><b>Balance:</b> ₹${currentUser.bal||0}</p>
+                 <p><b>Refer Code:</b> <span style="color:var(--gold);">${currentUser.referCode || currentUser.mob}</span></p>
+                 <hr style="border-color:#444; margin:15px 0;">
+                 <h3>📜 WITHDRAWAL HISTORY</h3>
+                 <div id="wHistoryList" style="text-align:left; max-height:200px; overflow-y:auto;">Loading history...</div>
+                 <button class="btn btn-dark" onclick="logout()" style="margin-top:15px;">LOGOUT</button>`;
+                 
+        document.getElementById('pContent').innerHTML = h;
+        document.getElementById('popup').style.display = 'block';
+
+        if(database) {
+            database.ref('withdrawals/' + currentUser.mob).once('value', snapshot => {
+                let listHtml = "";
+                let data = snapshot.val();
+                if(!data) {
+                    listHtml = "<p style='text-align:center; color:#888;'>Koi Withdrawal Request Nahi Hai.</p>";
+                } else {
+                    Object.keys(data).reverse().forEach(key => {
+                        let item = data[key];
+                        let statusBadge = item.status === 'PENDING' 
+                            ? `<span class="badge-pending">⏳ PENDING</span>` 
+                            : `<span class="badge-success">✅ SUCCESSFUL</span>`;
+                    
+                        listHtml += `<div class="list-item">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <b>₹${item.amt}</b>
+                                ${statusBadge}
+                            </div>
+                            <small style="color:#aaa;">Date: ${item.date}</small><br>
+                            <small style="color:#aaa;">To: ${item.bankName} (${item.accNo})</small>
+                        </div>`;
+                    });
+                }
+                document.getElementById('wHistoryList').innerHTML = listHtml;
+            });
+        }
+    }
+
+    function adminMode() {
+        let pw = prompt("Admin Password:"); 
+        if(pw !== "7860") return alert("Galat Password!");
+        
+        let h = `<h2>👑 ADMIN CONTROL PANEL</h2>
+                 <p style="font-size:12px; color:#aaa;">Pending Withdrawals Ko Approve Karke Successful Karein:</p>
+                 <div id="adminPendingList" style="text-align:left; max-height:350px; overflow-y:auto;">Loading Pending Requests...</div>`;
+                 
+        document.getElementById('pContent').innerHTML = h;
+        document.getElementById('popup').style.display = 'block';
+
+        loadAdminRequests();
+    }
+
+    function loadAdminRequests() {
+        if(database) {
+            database.ref('pendingWithdrawals').once('value', snapshot => {
+                let listHtml = "";
+                let data = snapshot.val();
+                if(!data) {
+                    listHtml = "<p style='text-align:center; color:#27ae60; font-weight:bold;'>🎉 Koi Pending Withdrawal Request Nahi Hai!</p>";
+                } else {
+                    Object.keys(data).forEach(wId => {
+                        let item = data[wId];
+                        listHtml += `<div class="list-item" style="border-left-color:#e74c3c;">
+                            <b>User:</b> ${item.userName} (${item.userMob})<br>
+                            <b style="color:#27ae60; font-size:16px;">Amount: ₹${item.amt}</b><br>
+                            <small><b>Bank/UPI:</b> ${item.bankName}</small><br>
+                            <small><b>Account/UPI ID:</b> ${item.accNo}</small><br>
+                            <small><b>A/C Holder Name:</b> ${item.accName}</small><br>
+                            <small><b>IFSC Code:</b> ${item.ifsc}</small><br>
+                            <button class="btn btn-gold" onclick="approveWithdrawal('${item.userMob}', '${wId}')" style="margin-top:8px; padding:8px; font-size:12px;">✅ APPROVE & MARK SUCCESSFUL</button>
+                        </div>`;
+                    });
+                }
+                document.getElementById('adminPendingList').innerHTML = listHtml;
+            });
+        }
+    }
+
+    function approveWithdrawal(userMob, withdrawId) {
+        if(confirm("Kya aapne is user ko paise bhej diye hain? Is request ko SUCCESSFUL mark karein?")) {
+            if(database) {
+                database.ref('withdrawals/' + userMob + '/' + withdrawId).update({
+                    status: 'SUCCESSFUL'
+                });
+
+                database.ref('pendingWithdrawals/' + withdrawId).remove().then(() => {
+                    alert("✅ Withdrawal Request Successfully Approved!");
+                    loadAdminRequests();
+                });
             }
-
-            localStorage.setItem("app_device_registered", "true");
-            localStorage.setItem("saved_user_id", userId);
-            loadDashboard(userId);
-          });
-        } else {
-          localStorage.setItem("saved_user_id", userId);
-          loadDashboard(userId);
         }
-      }).catch((error) => {
-        alert("Error: " + error.message);
-      });
     }
 
-    // -------------------------------------------------------------
+    function showReg() {
+        document.getElementById('pContent').innerHTML = `
+            <h2>REGISTER NEW ACCOUNT</h2>
+            <input id="rn" placeholder="Full Name">
+            <input id="rm" type="number" placeholder="Mobile Number">
+            <input id="rp" type="password" placeholder="Set Password">
+            <input id="rRef" placeholder="Referral Code (Optional)">
+            <button class="btn btn-gold" onclick="doReg()">CREATE ACCOUNT NOW</button>`;
+        document.getElementById('popup').style.display = 'block';
+    }
+
+    function doReg() {
+        let n = document.getElementById('rn').value.trim();
+        let m = document.getElementById('rm').value.trim();
+        let p = document.getElementById('rp').value.trim();
+        let enteredReferCode = document.getElementById('rRef').value.trim();
+
+        if(!n || !m || !p) return alert("Saari Details Bharein!");
+
+        // Device Anti-Fraud Check (Zero OTP Cost)
+        let isDeviceRegistered = localStorage.getItem("app_device_registered");
+        let referCode = m; // Mobile number hi user ka unique refer code ban jayega
+
+        if(database) {
+            database.ref('users/' + m).once('value', snapshot => {
+                if(snapshot.exists()) {
+                    return alert("Ye mobile number pehle se registered hai! Login karein.");
+                }
+
+                // 1. Naya Account Save Karein
+                database.ref('users/' + m).set({
+                    name: n,
+                    mob: m,
+                    pass: p,
+                    bal: 0,
+                    referCode: referCode,
+                    createdAt: Date.now()
+                }).then(() => {
+                    
+                    // 2. Refer Code Bonus Logic (₹10 Bonus agar device naya hai)
+                    if(enteredReferCode !== "" && !isDeviceRegistered) {
+                        creditReferralBonus(enteredReferCode);
+                    } else if(isDeviceRegistered && enteredReferCode !== "") {
+                        alert("Account Created! Par is device par pehle account ban chuka hai, isliye Refer Bonus nahi mila.");
+                    }
+
+                    // 3. Device lock save karein
+                    localStorage.setItem("app_device_registered", "true");
+
+                    currentUser = { name: n, mob: m, bal: 0, referCode: referCode };
+                    localStorage.setItem('dkj_user_login', JSON.stringify(currentUser));
+                    updateUI();
+                    alert("✅ Account Successfully Created!");
+                    closePopup();
+                });
+            });
+        }
+    }
+
     // Purane Referrer Ko ₹10 Bonus Dene Ka Function
-    // -------------------------------------------------------------
     function creditReferralBonus(referrerCode) {
-      const referrerBalanceRef = db.ref('users/' + referrerCode + '/balance');
-      referrerBalanceRef.transaction((currentBalance) => {
-        return (currentBalance || 0) + 10;
-      }, (error, committed) => {
-        if (committed) {
-          alert("Referral Code Applied Successfully! Referrer ko ₹10 bonus mil gaya.");
+        let referrerRef = database.ref('users/' + referrerCode + '/balance');
+        referrerRef.transaction((currentBalance) => {
+            return (currentBalance || 0) + 10;
+        }, (error, committed) => {
+            if(committed) {
+                alert("🎁 Referral Code Applied! Purane user ko ₹10 bonus mil gaya.");
+            }
+        });
+    }
+
+    function showLogin() {
+        document.getElementById('pContent').innerHTML = `
+            <h2>LOGIN ACCOUNT</h2>
+            <input id="lm" type="number" placeholder="Mobile Number">
+            <input id="lp" type="password" placeholder="Password">
+            <button class="btn btn-gold" onclick="doLogin()">LOGIN NOW</button>`;
+        document.getElementById('popup').style.display = 'block';
+    }
+
+    function doLogin() {
+        let m = document.getElementById('lm').value.trim();
+        let p = document.getElementById('lp').value.trim();
+        if(!m || !p) return alert("Mobile aur Password daalein!");
+
+        if(database) {
+            database.ref('users/' + m).once('value', s => {
+                let u = s.val();
+                if(u && u.pass == p) { 
+                    currentUser = u;
+                    localStorage.setItem('dkj_user_login', JSON.stringify(u)); 
+                    updateUI();
+                    alert("Login Successful!"); 
+                    closePopup();
+                } else { 
+                    alert("Wrong Mobile Number or Password!"); 
+                }
+            });
         }
-      });
     }
 
-    // -------------------------------------------------------------
-    // Dashboard & Live Balance Update
-    // -------------------------------------------------------------
-    function loadDashboard(userId) {
-      db.ref('users/' + userId).on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          currentUser = data;
-          document.getElementById('user-display-name').innerText = data.name;
-          document.getElementById('user-balance').innerText = data.balance || 0;
-          document.getElementById('my-refer-code').innerText = data.referCode;
+    function logout() { 
+        localStorage.removeItem('dkj_user_login'); 
+        location.reload(); 
+    }
 
-          document.getElementById('auth-section').classList.add('hidden');
-          document.getElementById('dashboard-section').classList.remove('hidden');
+    function showWinners() {
+        let h = "<h2>🏆 TOP WINNERS (MIN ₹200)</h2>";
+        demoWinners.forEach(w => {
+            h += `<div class="list-item"><span class="win-amt">₹${w.prize}</span><b>${w.name}</b><br><small>Mob: ${w.mob} | Ticket: ${w.code}</small></div>`;
+        });
+        document.getElementById('pContent').innerHTML = h;
+        document.getElementById('popup').style.display = 'block';
+    }
+
+    function showTC() {
+        document.getElementById('pContent').innerHTML = `<h2>TERMS & CONDITIONS</h2><p style="text-align:left; font-size:13px;">1. Free account creation.<br>2. Minimum withdrawal ₹200.<br>3. Fast payout in 24 hours.</p>`;
+        document.getElementById('popup').style.display = 'block';
+    }
+
+    function copyInvite() {
+        if(!currentUser) return alert("Pehle Login ya Register karein taaki aapka refer code ban sake!");
+        let code = currentUser.referCode || currentUser.mob;
+        let text = `🔥 DKJ Knowledge Jackpot App join karo aur ghar baithe paise kamao!\nMera Refer Code use karo: ${code}\nApp Link: ` + window.location.href;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            alert("📋 Refer Code & Link Copy Ho Gaya! Doston ko share karein.");
+        });
+    }
+
+    function joinDraw(amt) {
+        if(!currentUser) return alert("Pehle Login Karein!");
+        alert("Payment Gateway Feature coming soon!");
+    }
+
+    function updateUI() {
+        if(currentUser) {
+            const uHi = document.getElementById('uHi');
+            const vBal = document.getElementById('vBal');
+            if(uHi) uHi.innerText = "Hi, " + currentUser.name + " (Refer Code: " + (currentUser.referCode || currentUser.mob) + ")";
+            if(vBal) vBal.innerText = "₹" + (currentUser.bal || 0);
         }
-      });
     }
 
-    // -------------------------------------------------------------
-    // Refer Code Copy Function
-    // -------------------------------------------------------------
-    function shareReferralLink() {
-      if (!currentUser) return;
-      const referCode = currentUser.referCode;
-      const shareText = `Mera Refer Code: ${referCode} \nDKJ Knowledge Jackpot App Download karein aur mera Refer Code dalkar signup karein!`;
-
-      navigator.clipboard.writeText(shareText).then(() => {
-        alert("Refer Code aur Message copy ho gaya hai!");
-      }).catch(() => {
-        alert("Code: " + referCode);
-      });
-    }
-
-    // -------------------------------------------------------------
-    // Native YouTube Intent (Direct App Opening)
-    // -------------------------------------------------------------
-    function openYouTubeVideo(videoId) {
-      const intentUrl = `intent://www.youtube.com/watch?v=${videoId}#Intent;package=com.google.android.youtube;scheme=https;end;`;
-      window.location.href = intentUrl;
-    }
-
-    // Auto Login Check On Page Load
     window.onload = function() {
-      const savedUserId = localStorage.getItem("saved_user_id");
-      if (savedUserId) {
-        loadDashboard(savedUserId);
-      }
+        updateUI();
     };
-  </script>
+</script>
 </body>
 </html>
